@@ -3,20 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CYBER APK - Link Share Hub (Production)</title>
+  <title>CYBER APK - Link Share Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Supabase JS SDK v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
 
-    body {
-      background-color: #0b0f19;
-      color: #f8fafc;
-      font-family: 'Rajdhani', sans-serif;
-    }
+    body { background-color: #0b0f19; color: #f8fafc; font-family: 'Rajdhani', sans-serif; }
     .font-cyber { font-family: 'Orbitron', sans-serif; }
 
     ::-webkit-scrollbar { width: 6px; }
@@ -25,92 +19,84 @@
     ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
 
     .glow-cyan { box-shadow: 0 0 15px rgba(56, 189, 248, 0.25); }
+    .glow-cyan-lg { box-shadow: 0 0 25px rgba(56, 189, 248, 0.4); }
     .glow-purple { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
 
     .discord-embed {
-      background: #131b2e;
-      border: 1px solid #1e293b;
-      position: relative;
+      background: #131b2e; border: 1px solid #1e293b; position: relative;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .discord-embed:hover {
-      border-color: #38bdf8;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+      transform: translateY(-2px); border-color: #38bdf8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
     }
 
-    /* Glassmorphism Effect */
-    .glass-card {
-      background: rgba(19, 27, 46, 0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .modal-backdrop { background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(8px); }
+
+    .glass-badge {
+      background: linear-gradient(135deg, rgba(19, 27, 46, 0.55), rgba(15, 23, 42, 0.35));
+      backdrop-filter: blur(14px) saturate(180%);
+      -webkit-backdrop-filter: blur(14px) saturate(180%);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      transition: all 0.3s ease;
     }
-    .glass-card:hover {
-      background: rgba(19, 27, 46, 0.85);
-      border-color: rgba(56, 189, 248, 0.4);
+    .glass-badge:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 8px 30px rgba(56, 189, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
     }
 
-    .modal-backdrop {
-      background: rgba(11, 15, 25, 0.85);
-      backdrop-filter: blur(8px);
+    .glass-panel {
+      background: linear-gradient(135deg, rgba(19, 27, 46, 0.7), rgba(15, 23, 42, 0.5));
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
+
+    .auth-tab.active { color: #22d3ee; border-color: #22d3ee; }
+    .fade-in { animation: fadeIn 0.25s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-black">
 
-  <!-- NAVBAR -->
   <header class="w-full border-b border-slate-800 bg-[#0f172a]/90 sticky top-0 z-40 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 py-3">
+    <div class="max-w-7xl mx-auto px-4 py-4">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-        
-        <!-- LOGO & PROFILE EMBED CẠNH LOGO -->
-        <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
+        <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
           <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('user')">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center glow-cyan font-cyber font-black text-xl text-black">
-              C
-            </div>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center glow-cyan font-cyber font-black text-xl text-black">C</div>
             <div>
               <h1 class="font-cyber font-black text-2xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400">
                 CYBER<span class="text-white">APK</span>
               </h1>
-              <p class="text-[9px] text-slate-400 font-mono tracking-widest uppercase">Direct Link Hub v2.0</p>
+              <p class="text-[10px] text-slate-400 font-mono tracking-widest uppercase">Direct Link Engine v2.0</p>
             </div>
           </div>
-
-          <!-- EMBED GLASSMORPHISM USER PROFILE BADGE (CẠNH LOGO) -->
-          <div id="navUserProfileEmbed" class="hidden md:flex"></div>
+          <div id="headerProfileBadge" class="ml-1"></div>
         </div>
 
-        <!-- SEARCH BAR -->
         <div class="w-full md:w-96 relative">
           <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
-          <input type="text" id="searchInput" oninput="renderAppList()" placeholder="Tìm kiếm APK, Mod, Fan game..." 
-                 class="w-full bg-[#131b2e] border border-slate-700/80 rounded-xl pl-11 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition">
+          <input type="text" id="searchInput" oninput="renderAppList()" placeholder="Tìm kiếm APK, Mod, Fan game..."
+                 class="w-full bg-[#131b2e] border border-slate-700/80 rounded-xl pl-11 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition font-medium">
         </div>
 
-        <!-- AUTH BUTTONS & DASHBOARD ACCESS -->
         <div class="flex items-center gap-3 w-full md:w-auto justify-end" id="authNavButtons"></div>
-
       </div>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-
-    <!-- USER VIEW -->
     <div id="userView" class="space-y-6">
-
       <div class="discord-embed border-l-4 border-l-cyan-400 rounded-2xl p-6 glow-cyan bg-gradient-to-r from-[#131b2e] to-[#0f172a]">
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div class="space-y-2 max-w-2xl">
-            <span class="px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold tracking-wider uppercase">
-              ⚡ Official High-Speed Hub
-            </span>
+            <span class="px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold tracking-wider uppercase">⚡ High Speed APK Hub</span>
             <h2 class="text-2xl md:text-3xl font-cyber font-bold text-white">Kho Chia Sẻ Link Game APK Chuẩn Cyberpunk</h2>
-            <p class="text-slate-400 text-sm leading-relaxed">
-              Tổng hợp Undertale AU, APK Mod, Tool Android mượt mà. Tất cả file được kiểm duyệt nghiêm ngặt trước khi đăng công khai.
-            </p>
+            <p class="text-slate-400 text-sm leading-relaxed">Tổng hợp link tải game Undertale AU, APK Mod, Tool Android mượt mà. Tất cả file đều trải qua kiểm duyệt gắt gao bởi Admin trước khi đăng tải!</p>
           </div>
           <button onclick="openSubmitModal()" class="w-full md:w-auto px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 font-bold text-black font-cyber text-sm tracking-wide glow-cyan transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-cloud-arrow-up"></i> ĐĂNG GAME MỚI
@@ -118,7 +104,6 @@
         </div>
       </div>
 
-      <!-- BỘ LỌC -->
       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-filter text-cyan-400 text-sm"></i>
@@ -126,16 +111,14 @@
         </div>
         <div class="flex items-center gap-2 bg-[#131b2e] p-1 rounded-xl border border-slate-800">
           <button onclick="setFilter('latest')" id="filter-latest" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold transition">Mới nhất</button>
-          <button onclick="setFilter('popular')" id="filter-popular" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold transition">Phổ biến</button>
+          <button onclick="setFilter('popular')" id="filter-popular" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold transition">Phổ biến nhất</button>
           <button onclick="setFilter('oldest')" id="filter-oldest" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold transition">Cũ nhất</button>
         </div>
       </div>
 
-      <!-- GRID GAME -->
       <div id="appGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     </div>
 
-    <!-- ADMIN DASHBOARD VIEW -->
     <div id="adminView" class="hidden space-y-6">
       <div class="discord-embed border-l-4 border-l-purple-500 rounded-2xl p-6 glow-purple bg-gradient-to-r from-[#18112c] via-[#131b2e] to-[#0f172a]">
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -145,10 +128,10 @@
               <span class="text-xs font-mono text-purple-400">ADMIN CONTROL CENTER</span>
             </div>
             <h2 class="text-2xl font-cyber font-bold text-white mt-1">BẢNG ĐIỀU KHIỂN QUẢN TRỊ VIÊN</h2>
-            <p class="text-slate-400 text-sm mt-0.5">Duyệt bài đăng game mới & Quản lý phân quyền thành viên.</p>
+            <p class="text-slate-400 text-sm mt-0.5">Duyệt game, tải về kiểm duyệt virus/chất lượng, quản lý thành viên & phân quyền.</p>
           </div>
           <button onclick="switchView('user')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition border border-slate-700">
-            <i class="fa-solid fa-arrow-left mr-1"></i> Trang chủ
+            <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại trang chủ
           </button>
         </div>
       </div>
@@ -171,11 +154,7 @@
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="border-b border-slate-800 text-xs font-cyber text-slate-400">
-                <th class="p-3">USER</th>
-                <th class="p-3">EMAIL</th>
-                <th class="p-3">QUYỀN HẠN</th>
-                <th class="p-3">TRẠNG THÁI</th>
-                <th class="p-3 text-right">THAO TÁC</th>
+                <th class="p-3">USER</th><th class="p-3">QUYỀN HẠN</th><th class="p-3">TRẠNG THÁI</th><th class="p-3 text-right">THAO TÁC</th>
               </tr>
             </thead>
             <tbody id="userManagementTable" class="divide-y divide-slate-800/60 text-sm"></tbody>
@@ -183,133 +162,117 @@
         </div>
       </div>
     </div>
-
   </main>
 
-  <!-- MODAL ĐĂNG NHẬP / ĐĂNG KÝ CHÍNH THỨC -->
-  <div id="loginModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
-    <div class="discord-embed border-t-4 border-t-cyan-400 rounded-2xl w-full max-w-md p-6 glow-cyan bg-[#0f172a] space-y-4">
+  <!-- MODAL: AUTH -->
+  <div id="authModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+    <div class="glass-panel rounded-2xl w-full max-w-md p-6 space-y-5 fade-in">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 id="authModalTitle" class="font-cyber font-bold text-lg text-white">ĐĂNG NHẬP TÀI KHOẢN</h3>
-        <button onclick="closeModal('loginModal')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="font-cyber font-bold text-lg text-white">TÀI KHOẢN CYBER APK</h3>
+        <button onclick="closeModal('authModal')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <!-- GOOGLE LOGIN OAUTH -->
-      <button onclick="loginWithGoogle()" class="w-full py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm transition flex items-center justify-center gap-2">
-        <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.28v3.15C3.3 21.38 7.37 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.28C.46 8.2 0 10.04 0 12s.46 3.8 1.28 5.42l4-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.94 1.19 15.23 0 12 0 7.37 0 3.3 2.62 1.28 6.58l4 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
-        Tiếp tục với Google
+      <div class="flex border-b border-slate-800">
+        <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="auth-tab active flex-1 pb-2 text-sm font-bold border-b-2 border-transparent text-slate-400 transition">ĐĂNG NHẬP</button>
+        <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="auth-tab flex-1 pb-2 text-sm font-bold border-b-2 border-transparent text-slate-400 transition">ĐĂNG KÝ</button>
+      </div>
+
+      <button onclick="handleGoogleLogin()" class="w-full py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm flex items-center justify-center gap-3 transition">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4c-7.7 0-14.3 4.4-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-8l-6.5 5C9.6 39.5 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.7l6.2 5.2C41.1 35.5 44 30.4 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
+        Đăng nhập bằng Google
       </button>
 
-      <div class="flex items-center gap-2 my-2">
-        <div class="flex-1 border-b border-slate-800"></div>
-        <span class="text-[10px] text-slate-500 font-mono uppercase">Hoặc Email</span>
-        <div class="flex-1 border-b border-slate-800"></div>
+      <div class="flex items-center gap-3">
+        <div class="flex-1 h-px bg-slate-800"></div>
+        <span class="text-[10px] text-slate-500 font-mono">HOẶC</span>
+        <div class="flex-1 h-px bg-slate-800"></div>
       </div>
 
-      <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-3">
-        <div id="usernameField" class="hidden">
-          <label class="block text-xs font-bold text-slate-300 mb-1">Tên tài khoản (Username)</label>
-          <input type="text" id="authUsername" placeholder="SansGamer_99" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
-        </div>
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Email</label>
-          <input type="email" id="authEmail" required placeholder="user@gmail.com" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
+          <input type="email" id="loginEmail" required class="w-full bg-[#131b2e]/70 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Mật khẩu</label>
-          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
+          <input type="password" id="loginPassword" required class="w-full bg-[#131b2e]/70 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
         </div>
-
-        <button type="submit" id="authSubmitBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 font-bold text-black font-cyber text-sm tracking-wide glow-cyan transition mt-2">
-          ĐĂNG NHẬP
-        </button>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-bold text-sm font-cyber glow-cyan hover:brightness-110 transition">ĐĂNG NHẬP</button>
       </form>
 
-      <div class="text-center pt-2 text-xs text-slate-400">
-        <span id="authToggleText">Chưa có tài khoản?</span>
-        <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-cyan-400 font-bold hover:underline ml-1">Đăng ký ngay</button>
-      </div>
+      <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3 hidden">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Username *</label>
+          <input type="text" id="regUsername" required minlength="3" maxlength="30" class="w-full bg-[#131b2e]/70 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Email *</label>
+          <input type="email" id="regEmail" required class="w-full bg-[#131b2e]/70 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Mật khẩu * (≥ 6 ký tự)</label>
+          <input type="password" id="regPassword" required minlength="6" class="w-full bg-[#131b2e]/70 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-600 text-black font-bold text-sm font-cyber hover:brightness-110 transition">TẠO TÀI KHOẢN</button>
+      </form>
+
+      <p id="authError" class="text-xs text-rose-400 hidden"></p>
     </div>
   </div>
 
-  <!-- MODAL PROFILE USER (EMBED GLASSMORPHISM) -->
-  <div id="profileModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
-    <div class="discord-embed border-t-4 border-t-cyan-400 rounded-2xl w-full max-w-lg p-6 glow-cyan bg-[#0f172a]/95 backdrop-blur-xl space-y-5">
+  <!-- MODAL: PROFILE -->
+  <div id="profileModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-panel rounded-2xl w-full max-w-2xl p-6 space-y-5 my-8 fade-in relative">
+      <button onclick="closeModal('profileModal')" class="absolute top-4 right-4 text-slate-500 hover:text-white z-10"><i class="fa-solid fa-xmark"></i></button>
+      <div id="profileContent" class="space-y-5"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT PROFILE -->
+  <div id="editProfileModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+    <div class="glass-panel rounded-2xl w-full max-w-md p-6 space-y-4 fade-in">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-cyber font-bold text-base text-white flex items-center gap-2">
-          <i class="fa-solid fa-[#fa-id-card] text-cyan-400"></i> HỒ SƠ THÀNH VIÊN
-        </h3>
-        <button onclick="closeModal('profileModal')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="font-cyber font-bold text-lg text-white">CHỈNH SỬA PROFILE</h3>
+        <button onclick="closeModal('editProfileModal')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
-
-      <!-- MAIN PROFILE HEADER (GLASSMORPHISM EMBED) -->
-      <div class="glass-card rounded-2xl p-4 flex flex-col md:flex-row items-center gap-4 border border-slate-700/50 relative overflow-hidden">
-        <img id="profileAvatar" src="https://i.imgur.com/default-avatar.png" class="w-20 h-20 rounded-2xl object-cover border-2 border-cyan-400 glow-cyan flex-shrink-0" alt="Avatar">
-        <div class="space-y-1 text-center md:text-left flex-1 min-w-0">
-          <div class="flex items-center justify-center md:justify-start gap-1.5">
-            <h2 id="profileUsername" class="text-xl font-cyber font-bold text-white truncate">Loading...</h2>
-            <span id="profileRoleBadge"></span>
-          </div>
-          <p id="profileEmail" class="text-xs text-slate-400 font-mono truncate">email@domain.com</p>
-          <div id="profileRoleLevelTag" class="inline-block px-2.5 py-0.5 rounded text-[10px] font-mono font-bold mt-1"></div>
-        </div>
-      </div>
-
-      <!-- FORM CHỈNH SỬA PROFILE (CHỈ HIỆN KHI XEM PROFILE CỦA CHÍNH MÌNH) -->
-      <form id="editProfileForm" onsubmit="handleProfileUpdate(event)" class="hidden space-y-3 bg-[#131b2e] p-3.5 rounded-xl border border-slate-800">
-        <div class="text-xs font-bold text-cyan-400 font-cyber flex items-center gap-1">
-          <i class="fa-solid fa-pen-to-square"></i> CẬP NHẬT THÔNG TIN
+      <form id="editProfileForm" onsubmit="handleProfileSave(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Username</label>
+          <input type="text" id="editUsername" required minlength="3" maxlength="30" class="w-full bg-[#131b2e]/70 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-400 mb-1">Tên hiển thị</label>
-          <input type="text" id="editUsernameInput" class="w-full bg-[#0f172a] border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:border-cyan-400 focus:outline-none">
+          <label class="block text-xs font-bold text-slate-300 mb-1">Avatar URL</label>
+          <input type="url" id="editAvatar" class="w-full bg-[#131b2e]/70 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
         </div>
-        <div>
-          <label class="block text-[11px] font-bold text-slate-400 mb-1">URL Avatar (Link Ảnh)</label>
-          <input type="url" id="editAvatarInput" class="w-full bg-[#0f172a] border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:border-cyan-400 focus:outline-none">
+        <div class="flex items-center gap-3 justify-center py-2">
+          <img id="editAvatarPreview" src="https://i.imgur.com/default-avatar.png" class="w-16 h-16 rounded-full object-cover border-2 border-cyan-500/40" onerror="this.src='https://i.imgur.com/default-avatar.png'">
         </div>
-        <button type="submit" class="w-full py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold font-cyber transition">
-          LƯU THAY ĐỔI
-        </button>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-bold text-sm font-cyber glow-cyan hover:brightness-110 transition">LƯU THAY ĐỔI</button>
       </form>
-
-      <!-- DANH SÁCH GAME ĐÃ ĐĂNG CỦA USER NÀY -->
-      <div class="space-y-2">
-        <h4 class="text-xs font-cyber font-bold text-slate-300 flex items-center justify-between border-b border-slate-800 pb-2">
-          <span>GAME ĐÃ ĐĂNG TẢI</span>
-          <span id="userUploadedCount" class="text-cyan-400 font-mono">0</span>
-        </h4>
-        <div id="userUploadedAppList" class="max-h-48 overflow-y-auto space-y-2 pr-1">
-          <!-- Render danh sách game của user -->
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- MODAL ĐĂNG GAME MỚI -->
+  <!-- MODAL: SUBMIT APP -->
   <div id="submitModal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
     <div class="discord-embed border-t-4 border-t-cyan-400 rounded-2xl w-full max-w-lg p-6 glow-cyan bg-[#0f172a] space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-cyber font-bold text-lg text-white">ĐĂNG BÀI GAME / APK MỚI</h3>
         <button onclick="closeModal('submitModal')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
-
-      <p class="text-xs text-slate-400">Game sẽ được gửi vào <span class="text-yellow-400 font-bold">Hàng chờ kiểm duyệt của Admin</span> trước khi lên Hub công khai.</p>
-
+      <p class="text-xs text-slate-400">Game sau khi đăng sẽ đi vào <span class="text-yellow-400 font-bold">Vòng kiểm duyệt của Admin</span> trước khi xuất hiện công khai.</p>
       <form id="submitAppForm" onsubmit="handleAppSubmit(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Tên Game / App *</label>
-          <input type="text" id="appTitle" required placeholder="VD: Undertale Last Breath Mobile" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
+          <input type="text" id="appTitle" required placeholder="VD: Undertale AU Sans Battle Mobile" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">Phiên bản *</label>
-            <input type="text" id="appVersion" required placeholder="v1.3.0" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
+            <input type="text" id="appVersion" required placeholder="v1.0.4" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">Dung lượng *</label>
-            <input type="text" id="appSize" required placeholder="68 MB" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
+            <input type="text" id="appSize" required placeholder="45 MB" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
           </div>
         </div>
         <div>
@@ -317,371 +280,588 @@
           <input type="url" id="appIcon" required placeholder="https://i.imgur.com/example.png" class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">Link Tải Gốc (Drive, MediaFire, GameJolt...) *</label>
-          <input type="url" id="appLink" required placeholder="https://drive.google.com/..." class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
+          <label class="block text-xs font-bold text-slate-300 mb-1">Link Tải Gốc *</label>
+          <input type="url" id="appLink" required placeholder="https://drive.google.com/file/d/..." class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Mô tả ngắn *</label>
-          <textarea id="appDesc" rows="3" required placeholder="Mô tả gameplay, cách cài phím ảo..." class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none"></textarea>
+          <textarea id="appDesc" rows="3" required placeholder="Mô tả gameplay, cách cài đặt..." class="w-full bg-[#131b2e] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none"></textarea>
         </div>
-        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 font-bold text-black font-cyber text-sm tracking-wide glow-cyan hover:brightness-110 transition">
-          GỬI VÀO HÀNG CHỜ DUYỆT 🚀
-        </button>
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 font-bold text-black font-cyber text-sm tracking-wide glow-cyan hover:brightness-110 transition">GỬI VÀO HÀNG CHỜ DUYỆT 🚀</button>
       </form>
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC & SUPABASE INTEGRATION -->
   <script>
-    // -----------------------------------------------------------------
-    // CẤU HÌNH SUPABASE CLIENT (BRO THAY CÁC KHÓA THẬT VÀO ĐÂY)
-    // -----------------------------------------------------------------
-    const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_ID.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // ============================================================
+    // CONFIG
+    // ============================================================
+    const SUPABASE_URL = 'https://zmenxenivafkkhrnmnxr.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_yK3kPKx-lZs7aFOS8Fd9eQ_Y5ES3Cfo';
 
-    // STATE HỆ THỐNG
-    let currentUserProfile = null; // Profile người dùng hiện tại
-    let allUsersCache = [];       // Cache danh sách user
-    let appList = [];             // Danh sách game từ DB
-    let isRegisterMode = false;
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      }
+    });
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    let currentUser = null;      // profile object {id, username, email, role, banned, avatar, provider}
     let currentFilter = 'latest';
     let currentAdminTab = 'pending';
+    let localUsers = [];         // cache profiles
+    let localApps = [];          // cache applications
 
-    // -----------------------------------------------------------------
-    // KHỞI TẠO APP & LẤY SESSION REALTIME
-    // -----------------------------------------------------------------
-    async function init() {
-      // 1. Kiểm tra Session Supabase
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await fetchUserProfile(session.user.id);
-      }
-
-      // Lắng nghe trạng thái đăng nhập thay đổi
-      supabase.auth.onAuthStateChange(async (event, session) => {
-        if (session?.user) {
-          await fetchUserProfile(session.user.id);
-        } else {
-          currentUserProfile = null;
-        }
-        renderNav();
-      });
-
-      // 2. Fetch danh sách Game & Users
-      await loadAppData();
-      await loadAllUsers();
-      renderNav();
-      renderAppList();
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function escapeHtml(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
-
-    // Lấy thông tin chi tiết user từ bảng users
-    async function fetchUserProfile(userId) {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (!error && data) {
-        currentUserProfile = data;
-      }
+    function formatDate(ts) {
+      if (!ts) return '—';
+      return new Date(ts).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
-
-    async function loadAppData() {
-      const { data, error } = await supabase
-        .from('applications')
-        .select('*, users(id, username, role_level, avatar_url)');
-      
-      if (!error && data) {
-        appList = data;
-      }
-    }
-
-    async function loadAllUsers() {
-      const { data, error } = await supabase.from('users').select('*');
-      if (!error && data) {
-        allUsersCache = data;
-      }
-    }
-
-    // -----------------------------------------------------------------
-    // TICK BADGES HELPER
-    // -----------------------------------------------------------------
-    function getRoleBadgeHtml(roleLevel) {
-      if (roleLevel === 1) {
-        return `<i class="fa-solid fa-circle-check text-cyan-400 text-xs" title="Tick Xanh - Uploader Uy Tín"></i>`;
-      } else if (roleLevel === 2) {
-        return `<i class="fa-solid fa-shield-halved text-yellow-400 text-xs" title="Tick Vàng - Quyền Sinh Sát (Mod)"></i>`;
-      } else if (roleLevel === 3) {
-        return `<i class="fa-solid fa-crown text-purple-400 text-xs" title="Tick Tím - Quản Trị Tối Cao (Admin)"></i>`;
-      }
+    function getRoleBadgeHtml(role) {
+      if (role === 1) return `<i class="fa-solid fa-circle-check text-cyan-400 text-xs" title="Người đăng bài uy tín"></i>`;
+      if (role === 2) return `<i class="fa-solid fa-shield-halved text-yellow-400 text-xs" title="Moderator"></i>`;
+      if (role === 3) return `<i class="fa-solid fa-crown text-purple-400 text-xs" title="Admin tối cao"></i>`;
       return '';
     }
+    function getRoleLabel(role) {
+      return ['Level 0 (User)', 'Level 1 (Tick Xanh)', 'Level 2 (Tick Vàng)', 'Level 3 (Tick Tím)'][role] || 'Unknown';
+    }
 
-    // -----------------------------------------------------------------
-    // RENDER NAVBAR & EMBED PROFILE BADGE CẠNH LOGO
-    // -----------------------------------------------------------------
-    function renderNav() {
-      const navButtons = document.getElementById('authNavButtons');
-      const profileEmbed = document.getElementById('navUserProfileEmbed');
+    // ============================================================
+    // MAPPERS
+    // ============================================================
+    function mapDbUser(u) {
+      if (!u) return null;
+      return {
+        id: u.id,                          // UUID string
+        username: u.username,
+        email: u.email,
+        role: u.role_level ?? 0,
+        banned: !!u.is_banned,
+        avatar: u.avatar_url || 'https://i.imgur.com/default-avatar.png',
+        provider: u.auth_provider || 'local',
+        createdAt: u.created_at ? new Date(u.created_at).getTime() : Date.now(),
+      };
+    }
+    function mapDbApp(a) {
+      if (!a) return null;
+      return {
+        id: a.id,                          // number
+        user_id: a.user_id,                // UUID string
+        title: a.title,
+        version: a.version,
+        size: a.file_size,
+        icon: a.icon_url,
+        desc: a.description,
+        downloadUrl: a.download_url,
+        rating: Number(a.rating) || 5.0,
+        downloads: a.download_count || 0,
+        createdAt: a.created_at ? new Date(a.created_at).getTime() : Date.now(),
+        status: a.status,
+      };
+    }
 
-      if (!currentUserProfile) {
-        profileEmbed.classList.add('hidden');
-        navButtons.innerHTML = `
-          <button onclick="openModal('loginModal')" class="px-4 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold font-cyber transition">
-            <i class="fa-solid fa-right-to-bracket mr-1"></i> ĐĂNG NHẬP / ĐĂNG KÝ
-          </button>
-        `;
-        return;
+    function getUserById(id) {
+      if (!id) return null;
+      return localUsers.find(u => String(u.id) === String(id))
+        || { id, username: 'Unknown', role: 0, avatar: 'https://i.imgur.com/default-avatar.png' };
+    }
+
+    // ============================================================
+    // LOAD DATA
+    // ============================================================
+    async function loadUsers() {
+      const { data, error } = await supabaseClient.from('users').select('*').order('created_at', { ascending: true });
+      if (error) throw error;
+      localUsers = data.map(mapDbUser);
+    }
+    async function loadApps() {
+      const { data, error } = await supabaseClient.from('applications').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      localApps = data.map(mapDbApp);
+    }
+    async function fetchProfileByAuthId(uid) {
+      const { data, error } = await supabaseClient.from('users').select('*').eq('id', uid).maybeSingle();
+      if (error) { console.warn('fetchProfile error', error); return null; }
+      return data ? mapDbUser(data) : null;
+    }
+
+    // Chờ trigger tạo profile (retry tối đa ~3s)
+    async function waitForProfile(uid) {
+      for (let i = 0; i < 10; i++) {
+        const p = await fetchProfileByAuthId(uid);
+        if (p) return p;
+        await new Promise(r => setTimeout(r, 300));
       }
-
-      // 1. EMBED GLASSMORPHISM CẠNH LOGO
-      profileEmbed.classList.remove('hidden');
-      profileEmbed.innerHTML = `
-        <div onclick="openProfileModal('${currentUserProfile.id}')" 
-             class="glass-card px-3 py-1.5 rounded-xl flex items-center gap-2 cursor-pointer transition glow-cyan">
-          <img src="${currentUserProfile.avatar_url || 'https://i.imgur.com/default-avatar.png'}" class="w-7 h-7 rounded-lg object-cover border border-cyan-400">
-          <div class="leading-tight">
-            <div class="text-xs font-bold text-slate-100 flex items-center gap-1">
-              ${currentUserProfile.username} ${getRoleBadgeHtml(currentUserProfile.role_level)}
-            </div>
-            <div class="text-[9px] text-slate-400 font-mono">Level ${currentUserProfile.role_level}</div>
-          </div>
-        </div>
-      `;
-
-      // 2. NÚT ĐIỀU HƯỚNG BÊN PHẢI
-      let adminBtn = '';
-      if (currentUserProfile.role_level >= 2) {
-        adminBtn = `
-          <button onclick="switchView('admin')" class="px-3.5 py-2 rounded-xl bg-purple-950/80 hover:bg-purple-900 border border-purple-500/50 text-purple-300 text-xs font-bold font-cyber glow-purple transition">
-            <i class="fa-solid fa-solar-panel text-purple-400 mr-1"></i> DASHBOARD DUYỆT
-          </button>
-        `;
-      }
-
-      navButtons.innerHTML = `
-        ${adminBtn}
-        <button onclick="handleLogout()" class="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold transition">
-          <i class="fa-solid fa-power-off"></i>
-        </button>
-      `;
+      return null;
     }
 
-    // -----------------------------------------------------------------
-    // XỬ LÝ AUTHENTICATION (SUPABASE)
-    // -----------------------------------------------------------------
-    function toggleAuthMode() {
-      isRegisterMode = !isRegisterMode;
-      document.getElementById('authModalTitle').innerText = isRegisterMode ? 'ĐĂNG KÝ TÀI KHOẢN MỚI' : 'ĐĂNG NHẬP TÀI KHOẢN';
-      document.getElementById('authSubmitBtn').innerText = isRegisterMode ? 'ĐĂNG KÝ' : 'ĐĂNG NHẬP';
-      document.getElementById('authToggleText').innerText = isRegisterMode ? 'Đã có tài khoản?' : 'Chưa có tài khoản?';
-      document.getElementById('authToggleBtn').innerText = isRegisterMode ? 'Đăng nhập' : 'Đăng ký ngay';
-      document.getElementById('usernameField').classList.toggle('hidden', !isRegisterMode);
-    }
-
-    async function loginWithGoogle() {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-      if (error) alert("Lỗi đăng nhập Google: " + error.message);
-    }
-
-    async function handleAuthSubmit(e) {
+    // ============================================================
+    // AUTH HANDLERS
+    // ============================================================
+    async function handleLogin(e) {
       e.preventDefault();
-      const email = document.getElementById('authEmail').value;
-      const password = document.getElementById('authPassword').value;
+      clearAuthError();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
 
-      if (isRegisterMode) {
-        const username = document.getElementById('authUsername').value;
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) {
-          alert("Lỗi đăng ký: " + error.message);
-          return;
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw new Error(error.message);
+
+        const profile = await waitForProfile(data.user.id);
+        if (!profile) throw new Error('Không tìm thấy profile trong CSDL.');
+        if (profile.banned) {
+          await supabaseClient.auth.signOut();
+          throw new Error('Tài khoản đã bị BAN.');
         }
-        if (data.user) {
-          // Tạo bản ghi trong bảng users
-          await supabase.from('users').insert({
-            id: data.user.id,
-            username: username,
-            email: email,
-            role_level: 0
-          });
-          alert("✅ Đăng ký thành công! Đã tự động đăng nhập.");
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          alert("Lỗi đăng nhập: " + error.message);
-          return;
-        }
+        currentUser = profile;
+        closeModal('authModal');
+        await refreshAllUI();
+        showToast(`Xin chào, ${profile.username}!`, 'success');
+      } catch (err) {
+        showAuthError(err.message || 'Đăng nhập thất bại.');
       }
-      closeModal('loginModal');
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      clearAuthError();
+      const username = document.getElementById('regUsername').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+
+      try {
+        if (username.length < 3) throw new Error('Username phải ≥ 3 ký tự.');
+        if (!/^[a-zA-Z0-9_.]+$/.test(username)) throw new Error('Username chỉ chứa chữ, số, _ và .');
+        if (password.length < 6) throw new Error('Mật khẩu phải ≥ 6 ký tự.');
+
+        // Check username trùng (client-side, để báo sớm)
+        const { data: dupName } = await supabaseClient.from('users').select('id').eq('username', username).maybeSingle();
+        if (dupName) throw new Error('Username đã tồn tại.');
+
+        const { data, error } = await supabaseClient.auth.signUp({
+          email, password,
+          options: {
+            data: {
+              username,
+              avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`,
+            },
+          },
+        });
+        if (error) throw new Error(error.message);
+
+        // Nếu Supabase bật "Confirm email" thì session = null
+        if (!data.session) {
+          throw new Error('Đăng ký thành công! Vui lòng xác nhận email rồi đăng nhập.');
+        }
+
+        const profile = await waitForProfile(data.user.id);
+        if (!profile) throw new Error('Chưa tạo được profile, vui lòng thử đăng nhập lại.');
+
+        currentUser = profile;
+        closeModal('authModal');
+        await refreshAllUI();
+        showToast('Tạo tài khoản thành công!', 'success');
+      } catch (err) {
+        showAuthError(err.message || 'Đăng ký thất bại.');
+      }
+    }
+
+    async function handleGoogleLogin() {
+      clearAuthError();
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin + window.location.pathname },
+      });
+      if (error) showAuthError(error.message);
     }
 
     async function handleLogout() {
-      await supabase.auth.signOut();
-      currentUserProfile = null;
-      renderNav();
-      switchView('user');
+      if (!confirm('Bạn muốn đăng xuất?')) return;
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      closeModal('profileModal');
+      closeModal('editProfileModal');
+      await refreshAllUI();
+      showToast('Đã đăng xuất.', 'info');
     }
 
-    // -----------------------------------------------------------------
-    // HIỂN THỊ HỒ SƠ PROFILE & CHỈNH SỬA
-    // -----------------------------------------------------------------
-    async function openProfileModal(userId) {
-      let targetUser = allUsersCache.find(u => u.id === userId) || currentUserProfile;
-      if (!targetUser) return;
+    // ============================================================
+    // AUTH STATE LISTENER
+    // ============================================================
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      console.log('[AUTH EVENT]', event);
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') && session?.user) {
+        const profile = await waitForProfile(session.user.id);
+        if (profile) {
+          if (profile.banned) {
+            await supabaseClient.auth.signOut();
+            currentUser = null;
+            showToast('Tài khoản đã bị BAN.', 'error');
+          } else {
+            currentUser = profile;
+          }
+        }
+        renderNavButtons();
+      } else if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        renderNavButtons();
+      }
+    });
 
-      document.getElementById('profileUsername').innerText = targetUser.username;
-      document.getElementById('profileEmail').innerText = targetUser.email;
-      document.getElementById('profileAvatar').src = targetUser.avatar_url || 'https://i.imgur.com/default-avatar.png';
-      document.getElementById('profileRoleBadge').innerHTML = getRoleBadgeHtml(targetUser.role_level);
-
-      const tag = document.getElementById('profileRoleLevelTag');
-      tag.innerText = `LEVEL ${targetUser.role_level} USER`;
-      tag.className = `inline-block px-2.5 py-0.5 rounded text-[10px] font-mono font-bold mt-1 ${
-        targetUser.role_level === 3 ? 'bg-purple-950 text-purple-400 border border-purple-800' :
-        targetUser.role_level === 2 ? 'bg-yellow-950 text-yellow-400 border border-yellow-800' :
-        targetUser.role_level === 1 ? 'bg-cyan-950 text-cyan-400 border border-cyan-800' : 'bg-slate-800 text-slate-400'
-      }`;
-
-      // Nếu là profile cá nhân -> Hiện Form chỉnh sửa
-      const editForm = document.getElementById('editProfileForm');
-      if (currentUserProfile && currentUserProfile.id === targetUser.id) {
-        editForm.classList.remove('hidden');
-        document.getElementById('editUsernameInput').value = targetUser.username;
-        document.getElementById('editAvatarInput').value = targetUser.avatar_url || '';
+    // ============================================================
+    // AUTH UI HELPERS
+    // ============================================================
+    function switchAuthTab(tab) {
+      const login = document.getElementById('loginForm');
+      const reg = document.getElementById('registerForm');
+      const tL = document.getElementById('tabLoginBtn');
+      const tR = document.getElementById('tabRegisterBtn');
+      clearAuthError();
+      if (tab === 'login') {
+        login.classList.remove('hidden'); reg.classList.add('hidden');
+        tL.classList.add('active'); tR.classList.remove('active');
       } else {
-        editForm.classList.add('hidden');
+        login.classList.add('hidden'); reg.classList.remove('hidden');
+        tR.classList.add('active'); tL.classList.remove('active');
+      }
+    }
+    function showAuthError(msg) {
+      const el = document.getElementById('authError');
+      el.textContent = '⚠️ ' + msg;
+      el.classList.remove('hidden');
+    }
+    function clearAuthError() { document.getElementById('authError').classList.add('hidden'); }
+    function openAuthModal() { switchAuthTab('login'); clearAuthError(); openModal('authModal'); }
+
+    // ============================================================
+    // NAV + PROFILE BADGE
+    // ============================================================
+    function renderNavButtons() {
+      const container = document.getElementById('authNavButtons');
+      const badgeSlot = document.getElementById('headerProfileBadge');
+
+      if (!currentUser) {
+        badgeSlot.innerHTML = '';
+        container.innerHTML = `
+          <button onclick="openAuthModal()" class="px-4 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold font-cyber transition">
+            <i class="fa-solid fa-user-astronaut mr-1"></i> ĐĂNG NHẬP
+          </button>`;
+        return;
       }
 
-      // Đổ danh sách game đã đăng của User này
-      const userApps = appList.filter(a => a.user_id === targetUser.id);
-      document.getElementById('userUploadedCount').innerText = userApps.length;
-      
-      const appListContainer = document.getElementById('userUploadedAppList');
-      if (userApps.length === 0) {
-        appListContainer.innerHTML = `<p class="text-xs text-slate-500 font-mono py-2">Chưa đăng tải game nào.</p>`;
-      } else {
-        appListContainer.innerHTML = userApps.map(app => `
-          <div class="bg-[#131b2e] p-2 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
-            <div class="flex items-center gap-2 min-w-0">
-              <img src="${app.icon_url}" class="w-8 h-8 rounded-lg object-cover">
-              <span class="font-bold text-slate-200 truncate">${app.title}</span>
+      badgeSlot.innerHTML = `
+        <button onclick="openProfile('${currentUser.id}')" class="glass-badge rounded-xl flex items-center gap-2 px-2.5 py-1.5 max-w-[180px]">
+          <img src="${escapeHtml(currentUser.avatar)}" class="w-7 h-7 rounded-full object-cover border border-cyan-500/40"
+               onerror="this.src='https://i.imgur.com/default-avatar.png'">
+          <div class="hidden sm:block text-left leading-tight min-w-0">
+            <div class="text-xs font-bold text-slate-100 flex items-center gap-1 truncate">
+              <span class="truncate max-w-[90px]">${escapeHtml(currentUser.username)}</span>
+              ${getRoleBadgeHtml(currentUser.role)}
             </div>
-            <span class="px-2 py-0.5 rounded text-[10px] ${app.status === 'approved' ? 'text-emerald-400 bg-emerald-950' : 'text-yellow-400 bg-yellow-950'} font-mono">
-              ${app.status.toUpperCase()}
-            </span>
+            <div class="text-[9px] text-slate-400 font-mono">Lv ${currentUser.role}</div>
           </div>
-        `).join('');
+          <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 hidden sm:block"></i>
+        </button>`;
+
+      let adminBtn = '';
+      if (currentUser.role >= 2) {
+        adminBtn = `
+          <button onclick="switchView('admin')" class="px-3.5 py-2 rounded-xl bg-purple-950/80 hover:bg-purple-900 border border-purple-500/50 text-purple-300 text-xs font-bold font-cyber glow-purple transition flex items-center gap-1.5">
+            <i class="fa-solid fa-solar-panel text-purple-400"></i> BẢNG ĐIỀU KHIỂN
+          </button>`;
       }
+
+      container.innerHTML = `
+        ${adminBtn}
+        <button onclick="openProfile('${currentUser.id}')" class="px-3.5 py-2 rounded-xl bg-[#131b2e] hover:border-cyan-400 border border-slate-800 text-slate-300 text-xs font-bold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-user"></i> Profile
+        </button>
+        <button onclick="handleLogout()" class="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-bold transition" title="Đăng xuất">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>`;
+    }
+
+    // ============================================================
+    // PROFILE
+    // ============================================================
+    async function openProfile(userId) {
+      const isSelf = currentUser && String(currentUser.id) === String(userId);
+      let user = getUserById(userId);
+
+      // Refresh từ server (đề phòng cache cũ)
+      const fresh = await fetchProfileByAuthId(userId);
+      if (fresh) {
+        user = fresh;
+        const idx = localUsers.findIndex(u => String(u.id) === String(userId));
+        if (idx >= 0) localUsers[idx] = fresh; else localUsers.push(fresh);
+      }
+      if (!user) { showToast('Không tìm thấy user.', 'error'); return; }
+
+      // Lấy game của user này
+      const { data: appsData } = await supabaseClient
+        .from('applications').select('*').eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      let apps = (appsData || []).map(mapDbApp);
+
+      // Nếu không phải self và không phải admin → chỉ hiện approved
+      if (!isSelf && (!currentUser || currentUser.role < 2)) {
+        apps = apps.filter(a => a.status === 'approved');
+      }
+
+      const totalDownloads = apps.reduce((s, a) => s + (a.downloads || 0), 0);
+
+      const appsHtml = apps.length ? apps.map(app => `
+        <div class="discord-embed rounded-xl p-3 flex items-center gap-3">
+          <img src="${escapeHtml(app.icon)}" class="w-12 h-12 rounded-lg object-cover bg-slate-800 border border-slate-700 flex-shrink-0" onerror="this.src='https://via.placeholder.com/48'">
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-bold text-slate-100 truncate">${escapeHtml(app.title)}</div>
+            <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+              <span class="text-cyan-400 font-mono">${escapeHtml(app.version)}</span>
+              <span>•</span>
+              <span>${escapeHtml(app.size)}</span>
+              <span>•</span>
+              <span class="text-yellow-400"><i class="fa-solid fa-star"></i> ${app.rating}</span>
+            </div>
+          </div>
+          ${app.status === 'pending' ? `<span class="text-[10px] px-2 py-1 rounded bg-yellow-950 text-yellow-400 border border-yellow-700 flex-shrink-0">Chờ duyệt</span>` : ''}
+          ${app.status === 'rejected' ? `<span class="text-[10px] px-2 py-1 rounded bg-rose-950 text-rose-400 border border-rose-700 flex-shrink-0">Từ chối</span>` : ''}
+        </div>`).join('')
+        : `<div class="col-span-full text-center py-6 text-slate-500 font-mono text-xs border border-dashed border-slate-800 rounded-xl">
+            <i class="fa-solid fa-box-open text-2xl mb-2 opacity-50"></i>
+            <p>Chưa có game nào được đăng tải.</p>
+          </div>`;
+
+      const providerIcon = user.provider === 'google'
+        ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-200 border border-white/20 flex items-center gap-1"><i class="fa-brands fa-google text-[9px]"></i> Google</span>`
+        : `<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700"><i class="fa-solid fa-key text-[9px] mr-1"></i>Local</span>`;
+
+      const badgeColors = [
+        'bg-slate-800 text-slate-400 border-slate-700',
+        'bg-cyan-950 text-cyan-400 border-cyan-800',
+        'bg-yellow-950 text-yellow-400 border-yellow-800',
+        'bg-purple-950 text-purple-400 border-purple-800',
+      ];
+
+      document.getElementById('profileContent').innerHTML = `
+        <div class="flex flex-col sm:flex-row items-center sm:items-end gap-4 border-b border-slate-800 pb-5">
+          <img src="${escapeHtml(user.avatar)}" class="w-24 h-24 rounded-2xl object-cover border-2 border-cyan-500/40 glow-cyan" onerror="this.src='https://i.imgur.com/default-avatar.png'">
+          <div class="flex-1 text-center sm:text-left">
+            <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+              <h3 class="text-2xl font-cyber font-bold text-white">${escapeHtml(user.username)}</h3>
+              ${getRoleBadgeHtml(user.role)}
+            </div>
+            <div class="flex items-center justify-center sm:justify-start gap-2 mt-2 flex-wrap">
+              <span class="text-[10px] px-2 py-0.5 rounded-full border ${badgeColors[user.role]} font-mono font-bold">${getRoleLabel(user.role)}</span>
+              ${providerIcon}
+              ${user.banned ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-rose-950 text-rose-400 border border-rose-700"><i class="fa-solid fa-ban mr-1"></i>BANNED</span>` : ''}
+            </div>
+            <p class="text-xs text-slate-500 mt-2"><i class="fa-solid fa-calendar mr-1"></i> Tham gia: ${formatDate(user.createdAt)}</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div class="glass-panel rounded-xl p-3 text-center">
+            <div class="text-2xl font-cyber font-black text-cyan-400">${apps.length}</div>
+            <div class="text-[10px] text-slate-400 font-mono uppercase">Game đăng</div>
+          </div>
+          <div class="glass-panel rounded-xl p-3 text-center">
+            <div class="text-2xl font-cyber font-black text-yellow-400">${totalDownloads}</div>
+            <div class="text-[10px] text-slate-400 font-mono uppercase">Lượt tải</div>
+          </div>
+          <div class="glass-panel rounded-xl p-3 text-center">
+            <div class="text-2xl font-cyber font-black text-purple-400">Lv ${user.role}</div>
+            <div class="text-[10px] text-slate-400 font-mono uppercase">Quyền hạn</div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-cyber font-bold text-sm text-slate-300 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-gamepad text-cyan-400"></i> GAME ĐÃ ĐĂNG TẢI
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${appsHtml}</div>
+        </div>
+
+        ${isSelf ? `
+          <div class="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-800">
+            <button onclick="openEditProfile()" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-bold text-sm font-cyber glow-cyan hover:brightness-110 transition">
+              <i class="fa-solid fa-pen mr-1"></i> CHỈNH SỬA PROFILE
+            </button>
+            <button onclick="handleLogout()" class="flex-1 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/40 font-bold text-sm font-cyber transition">
+              <i class="fa-solid fa-right-from-bracket mr-1"></i> ĐĂNG XUẤT
+            </button>
+          </div>` : ''}
+      `;
 
       openModal('profileModal');
     }
 
-    async function handleProfileUpdate(e) {
+    // ============================================================
+    // EDIT PROFILE
+    // ============================================================
+    function openEditProfile() {
+      if (!currentUser) return;
+      document.getElementById('editUsername').value = currentUser.username;
+      document.getElementById('editAvatar').value = currentUser.avatar || '';
+      document.getElementById('editAvatarPreview').src = currentUser.avatar || 'https://i.imgur.com/default-avatar.png';
+      openModal('editProfileModal');
+    }
+
+    async function handleProfileSave(e) {
       e.preventDefault();
-      const newUsername = document.getElementById('editUsernameInput').value;
-      const newAvatar = document.getElementById('editAvatarInput').value;
+      const username = document.getElementById('editUsername').value.trim();
+      const avatar = document.getElementById('editAvatar').value.trim() || 'https://i.imgur.com/default-avatar.png';
 
-      const { error } = await supabase
-        .from('users')
-        .update({ username: newUsername, avatar_url: newAvatar })
-        .eq('id', currentUserProfile.id);
+      try {
+        const { data: dup } = await supabaseClient.from('users').select('id').eq('username', username).neq('id', currentUser.id).maybeSingle();
+        if (dup) throw new Error('Username đã tồn tại.');
 
-      if (!error) {
-        currentUserProfile.username = newUsername;
-        currentUserProfile.avatar_url = newAvatar;
-        await loadAllUsers();
-        renderNav();
-        renderAppList();
+        const { error } = await supabaseClient
+          .from('users')
+          .update({ username, avatar_url: avatar, updated_at: new Date().toISOString() })
+          .eq('id', currentUser.id);
+        if (error) throw new Error(error.message);
+
+        currentUser = { ...currentUser, username, avatar };
+        const idx = localUsers.findIndex(u => String(u.id) === String(currentUser.id));
+        if (idx >= 0) localUsers[idx] = { ...localUsers[idx], username, avatar };
+
+        closeModal('editProfileModal');
         closeModal('profileModal');
-        alert("✅ Đã cập nhật hồ sơ cá nhân!");
-      } else {
-        alert("Lỗi cập nhật: " + error.message);
+        await refreshAllUI();
+        showToast('Đã cập nhật profile!', 'success');
+      } catch (err) {
+        showToast('Lỗi: ' + err.message, 'error');
       }
     }
 
-    // -----------------------------------------------------------------
-    // RENDER DANH SÁCH GAME CÔNG KHAI
-    // -----------------------------------------------------------------
+    // ============================================================
+    // VIEW SWITCH
+    // ============================================================
+    function switchView(viewName) {
+      if (viewName === 'admin' && (!currentUser || currentUser.role < 2)) {
+        showToast('Bạn không có quyền truy cập!', 'error');
+        return;
+      }
+      const userView = document.getElementById('userView');
+      const adminView = document.getElementById('adminView');
+      if (viewName === 'admin') {
+        userView.classList.add('hidden');
+        adminView.classList.remove('hidden');
+        updateAdminRoleBadge();
+        renderAdminPendingList();
+        renderAdminUserTable();
+      } else {
+        adminView.classList.add('hidden');
+        userView.classList.remove('hidden');
+      }
+    }
+
+    // ============================================================
+    // APP LIST
+    // ============================================================
     function renderAppList() {
       const grid = document.getElementById('appGrid');
-      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      const searchQuery = (document.getElementById('searchInput').value || '').toLowerCase().trim();
 
-      let filtered = appList.filter(app => app.status === 'approved');
+      let filtered = localApps.filter(a => a.status === 'approved');
 
       if (searchQuery) {
-        filtered = filtered.filter(app => 
-          app.title.toLowerCase().includes(searchQuery) || 
-          app.description.toLowerCase().includes(searchQuery)
-        );
+        filtered = filtered.filter(a =>
+          (a.title || '').toLowerCase().includes(searchQuery) ||
+          (a.desc || '').toLowerCase().includes(searchQuery));
       }
 
-      if (currentFilter === 'latest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      else if (currentFilter === 'popular') filtered.sort((a, b) => b.download_count - a.download_count);
-      else if (currentFilter === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      if (currentFilter === 'latest') filtered.sort((a, b) => b.createdAt - a.createdAt);
+      else if (currentFilter === 'popular') filtered.sort((a, b) => b.downloads - a.downloads);
+      else if (currentFilter === 'oldest') filtered.sort((a, b) => a.createdAt - b.createdAt);
 
-      if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono"><i class="fa-solid fa-ghost text-4xl mb-3"></i><p>Không tìm thấy game nào!</p></div>`;
+      if (!filtered.length) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 text-slate-500 font-mono">
+            <i class="fa-solid fa-ghost text-4xl mb-3"></i>
+            <p>Không tìm thấy game nào phù hợp!</p>
+          </div>`;
         return;
       }
 
       grid.innerHTML = filtered.map(app => {
-        const uploader = app.users || { username: 'Unknown', role_level: 0 };
+        const author = getUserById(app.user_id);
         return `
           <div class="discord-embed rounded-2xl p-4 flex flex-col justify-between border-t-2 border-t-cyan-400">
             <div>
               <div class="flex items-start gap-3 mb-3">
-                <img src="${app.icon_url}" class="w-14 h-14 rounded-xl object-cover bg-slate-800 border border-slate-700 flex-shrink-0">
+                <img src="${escapeHtml(app.icon)}" class="w-14 h-14 rounded-xl object-cover bg-slate-800 border border-slate-700 flex-shrink-0" onerror="this.src='https://via.placeholder.com/56'">
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-bold text-slate-100 text-base leading-snug truncate">${app.title}</h3>
+                  <h3 class="font-bold text-slate-100 text-base leading-snug truncate" title="${escapeHtml(app.title)}">${escapeHtml(app.title)}</h3>
                   <div class="text-xs text-slate-400 flex items-center gap-2 mt-1">
-                    <span class="text-cyan-400 font-mono font-bold">${app.version}</span>
+                    <span class="text-cyan-400 font-mono font-bold">${escapeHtml(app.version)}</span>
                     <span>•</span>
-                    <span>${app.file_size}</span>
+                    <span>${escapeHtml(app.size)}</span>
                   </div>
-                  <!-- ẤN VÀO TÊN ĐỂ XEM PROFILE UPLOADER -->
-                  <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-1 cursor-pointer hover:underline" onclick="openProfileModal('${app.user_id}')">
-                    Đăng bởi: <span class="text-slate-300 font-bold">${uploader.username}</span> ${getRoleBadgeHtml(uploader.role_level)}
+                  <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+                    Đăng bởi:
+                    <span class="text-slate-300 hover:text-cyan-400 cursor-pointer underline decoration-dotted" onclick="openProfile('${app.user_id}')">
+                      ${escapeHtml(author.username)} ${getRoleBadgeHtml(author.role)}
+                    </span>
                   </div>
                 </div>
               </div>
-
-              <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3">${app.description}</p>
+              <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3">${escapeHtml(app.desc)}</p>
             </div>
-
             <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
               <div class="flex items-center gap-1 text-yellow-400 text-xs font-bold">
                 <i class="fa-solid fa-star"></i> ${app.rating}
-                <span class="text-slate-500 font-normal ml-1">(${app.download_count} tải)</span>
+                <span class="text-slate-500 font-normal ml-1">(${app.downloads} tải)</span>
               </div>
-              <a href="${app.download_url}" target="_blank" onclick="incrementDownload('${app.id}')"
+              <a href="${escapeHtml(app.downloadUrl)}" onclick="incrementDownload(${app.id})" target="_blank"
                  class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:brightness-110 font-bold text-black text-xs font-cyber tracking-wider transition">
                 TẢI LINK ↗
               </a>
             </div>
-          </div>
-        `;
+          </div>`;
       }).join('');
     }
 
-    async function incrementDownload(appId) {
-      const app = appList.find(a => a.id === appId);
-      if (app) {
-        app.download_count += 1;
-        await supabase.from('applications').update({ download_count: app.download_count }).eq('id', appId);
-        renderAppList();
-      }
+    function setFilter(type) {
+      currentFilter = type;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-cyan-500', 'text-black');
+        btn.classList.add('text-slate-400');
+      });
+      const active = document.getElementById(`filter-${type}`);
+      if (active) { active.classList.add('bg-cyan-500', 'text-black'); active.classList.remove('text-slate-400'); }
+      renderAppList();
     }
 
-    // -----------------------------------------------------------------
-    // ĐĂNG GAME MỚI
-    // -----------------------------------------------------------------
+    async function incrementDownload(appId) {
+      const app = localApps.find(a => a.id == appId);
+      if (!app) return;
+      app.downloads = (app.downloads || 0) + 1;
+      supabaseClient.from('applications')
+        .update({ download_count: app.downloads })
+        .eq('id', app.id)
+        .then(({ error }) => { if (error) console.warn('increment err', error); });
+      renderAppList();
+    }
+
+    // ============================================================
+    // SUBMIT APP
+    // ============================================================
     function openSubmitModal() {
-      if (!currentUserProfile) {
-        alert("🔒 Bạn phải ĐĂNG NHẬP để đăng bài!");
-        openModal('loginModal');
+      if (!currentUser) {
+        showToast('Bạn phải đăng nhập để gửi game!', 'error');
+        openAuthModal();
         return;
       }
       openModal('submitModal');
@@ -689,165 +869,276 @@
 
     async function handleAppSubmit(e) {
       e.preventDefault();
-      const title = document.getElementById('appTitle').value;
-      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
-      
-      const newApp = {
-        user_id: currentUserProfile.id,
-        title: title,
-        slug: slug,
-        version: document.getElementById('appVersion').value,
-        file_size: document.getElementById('appSize').value,
-        icon_url: document.getElementById('appIcon').value,
-        download_url: document.getElementById('appLink').value,
-        description: document.getElementById('appDesc').value,
-        status: 'pending'
-      };
+      const title = document.getElementById('appTitle').value.trim();
+      const version = document.getElementById('appVersion').value.trim();
+      const file_size = document.getElementById('appSize').value.trim();
+      const icon_url = document.getElementById('appIcon').value.trim();
+      const download_url = document.getElementById('appLink').value.trim();
+      const description = document.getElementById('appDesc').value.trim();
 
-      const { data, error } = await supabase.from('applications').insert(newApp).select();
-      if (!error) {
-        alert("✅ Game đã gửi vào HÀNG CHỜ DUYỆT!");
+      const slug = title.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') + '-' + Date.now();
+
+      try {
+        const { error } = await supabaseClient.from('applications').insert({
+          user_id: currentUser.id,
+          title, slug, version,
+          file_size, icon_url, download_url, description,
+          status: 'pending',
+        });
+        if (error) throw new Error(error.message);
+
+        await loadApps();
         closeModal('submitModal');
         document.getElementById('submitAppForm').reset();
-        await loadAppData();
+        showToast('Gửi game thành công! Đang chờ Admin duyệt.', 'success');
         renderAdminPendingList();
-      } else {
-        alert("Lỗi gửi bài: " + error.message);
+        renderAppList();
+      } catch (err) {
+        console.error('Submit error:', err);
+        showToast('Lỗi: ' + err.message, 'error');
       }
     }
 
-    // -----------------------------------------------------------------
-    // ADMIN CONTROL DASHBOARD LOGIC
-    // -----------------------------------------------------------------
-    function switchView(viewName) {
-      if (viewName === 'admin' && (!currentUserProfile || currentUserProfile.role_level < 2)) {
-        alert("🚫 Bạn không có Quyền Sinh Sát/Quản Trị để truy cập!");
-        return;
-      }
-      document.getElementById('userView').classList.toggle('hidden', viewName === 'admin');
-      document.getElementById('adminView').classList.toggle('hidden', viewName !== 'admin');
-      
-      if (viewName === 'admin') {
-        const badge = document.getElementById('adminRoleBadge');
-        badge.innerHTML = currentUserProfile.role_level === 3 
-          ? `<span class="px-2 py-0.5 rounded bg-purple-950 text-purple-400 border border-purple-700 text-[10px] font-bold">LEVEL 3 - ADMIN</span>`
-          : `<span class="px-2 py-0.5 rounded bg-yellow-950 text-yellow-400 border border-yellow-700 text-[10px] font-bold">LEVEL 2 - MOD</span>`;
-        renderAdminPendingList();
-        renderAdminUserTable();
+    // ============================================================
+    // ADMIN DASHBOARD
+    // ============================================================
+    function updateAdminRoleBadge() {
+      const badge = document.getElementById('adminRoleBadge');
+      if (!currentUser) return;
+      if (currentUser.role === 2) {
+        badge.innerHTML = `<span class="px-2 py-0.5 rounded bg-yellow-950 text-yellow-400 border border-yellow-700 text-[10px] font-bold">QUYỀN SINH SÁT (LEVEL 2)</span>`;
+      } else if (currentUser.role === 3) {
+        badge.innerHTML = `<span class="px-2 py-0.5 rounded bg-purple-950 text-purple-400 border border-purple-700 text-[10px] font-bold">QUẢN TRỊ CAO NHẤT (LEVEL 3)</span>`;
       }
     }
 
     function switchAdminTab(tab) {
       currentAdminTab = tab;
-      document.getElementById('adminTabPending').className = tab === 'pending' ? "pb-3 text-sm font-bold border-b-2 border-purple-500 text-purple-400 transition flex items-center gap-2" : "pb-3 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2";
-      document.getElementById('adminTabUsers').className = tab === 'users' ? "pb-3 text-sm font-bold border-b-2 border-purple-500 text-purple-400 transition flex items-center gap-2" : "pb-3 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2";
-      document.getElementById('adminSectionPending').classList.toggle('hidden', tab !== 'pending');
-      document.getElementById('adminSectionUsers').classList.toggle('hidden', tab !== 'users');
+      const p = document.getElementById('adminTabPending');
+      const u = document.getElementById('adminTabUsers');
+      const sp = document.getElementById('adminSectionPending');
+      const su = document.getElementById('adminSectionUsers');
+      if (tab === 'pending') {
+        p.className = "pb-3 text-sm font-bold border-b-2 border-purple-500 text-purple-400 transition flex items-center gap-2";
+        u.className = "pb-3 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2";
+        sp.classList.remove('hidden'); su.classList.add('hidden');
+        renderAdminPendingList();
+      } else {
+        u.className = "pb-3 text-sm font-bold border-b-2 border-purple-500 text-purple-400 transition flex items-center gap-2";
+        p.className = "pb-3 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2";
+        su.classList.remove('hidden'); sp.classList.add('hidden');
+        renderAdminUserTable();
+      }
     }
 
     function renderAdminPendingList() {
       const container = document.getElementById('pendingAppGrid');
-      const pendingApps = appList.filter(app => app.status === 'pending');
-      document.getElementById('pendingCountBadge').innerText = pendingApps.length;
+      const badge = document.getElementById('pendingCountBadge');
+      const pending = localApps.filter(a => a.status === 'pending');
+      badge.innerText = pending.length;
 
-      if (pendingApps.length === 0) {
-        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500 font-mono border border-dashed border-slate-800 rounded-2xl"><i class="fa-solid fa-circle-check text-3xl mb-2 text-emerald-500"></i><p>Không có game chờ duyệt.</p></div>`;
+      if (!pending.length) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-10 text-slate-500 font-mono border border-dashed border-slate-800 rounded-2xl">
+            <i class="fa-solid fa-check-circle text-3xl mb-2 text-emerald-500"></i>
+            <p>Hàng chờ trống! Tất cả game đã được duyệt xong.</p>
+          </div>`;
         return;
       }
 
-      container.innerHTML = pendingApps.map(app => `
-        <div class="discord-embed rounded-2xl p-4 border-l-4 border-l-yellow-400">
-          <div class="flex items-start gap-3 mb-3">
-            <img src="${app.icon_url}" class="w-14 h-14 rounded-xl object-cover bg-slate-800 border border-slate-700 flex-shrink-0">
-            <div class="flex-1 min-w-0">
-              <h3 class="font-bold text-slate-100 text-sm truncate">${app.title}</h3>
-              <p class="text-xs text-slate-400 mt-0.5">${app.version} • ${app.file_size}</p>
+      container.innerHTML = pending.map(app => {
+        const author = getUserById(app.user_id);
+        return `
+          <div class="discord-embed rounded-2xl p-4 border-l-4 border-l-yellow-400">
+            <div class="flex items-start gap-3 mb-3">
+              <img src="${escapeHtml(app.icon)}" class="w-14 h-14 rounded-xl object-cover bg-slate-800 border border-slate-700 flex-shrink-0" onerror="this.src='https://via.placeholder.com/56'">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-bold text-slate-100 text-sm truncate">${escapeHtml(app.title)}</h3>
+                <p class="text-xs text-slate-400 mt-0.5">${escapeHtml(app.version)} • ${escapeHtml(app.size)}</p>
+                <div class="text-[11px] text-yellow-400 mt-1">
+                  Người đăng:
+                  <span class="cursor-pointer hover:underline" onclick="openProfile('${app.user_id}')">
+                    ${escapeHtml(author.username)} ${getRoleBadgeHtml(author.role)}
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-          <p class="text-xs text-slate-300 bg-[#0f172a] p-2.5 rounded-xl border border-slate-800 mb-3">"${app.description}"</p>
-          <div class="flex items-center gap-2">
-            <a href="${app.download_url}" target="_blank" class="px-3 py-2 rounded-xl bg-slate-800 text-xs text-slate-200 font-bold transition flex-1 text-center border border-slate-700">Tải về Test</a>
-            <button onclick="updateAppStatus('${app.id}', 'approved')" class="px-3 py-2 rounded-xl bg-emerald-500 text-black text-xs font-bold font-cyber">DUYỆT</button>
-            <button onclick="updateAppStatus('${app.id}', 'rejected')" class="px-3 py-2 rounded-xl bg-rose-500/20 text-rose-400 text-xs font-bold border border-rose-500/40">XÓA</button>
-          </div>
-        </div>
-      `).join('');
+            <p class="text-xs text-slate-300 bg-[#0f172a] p-2.5 rounded-xl border border-slate-800 mb-3">"${escapeHtml(app.desc)}"</p>
+            <div class="flex items-center gap-2">
+              <a href="${escapeHtml(app.downloadUrl)}" target="_blank" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-bold border border-slate-700 transition flex-1 text-center">
+                <i class="fa-solid fa-download mr-1"></i> Tải về Test
+              </a>
+              <button onclick="approveApp(${app.id})" class="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold font-cyber transition">
+                <i class="fa-solid fa-check mr-1"></i> DUYỆT
+              </button>
+              <button onclick="rejectApp(${app.id})" class="px-3 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/40 text-xs font-bold transition">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>`;
+      }).join('');
     }
 
-    async function updateAppStatus(appId, status) {
-      const { error } = await supabase.from('applications').update({ status }).eq('id', appId);
-      if (!error) {
-        await loadAppData();
+    async function approveApp(appId) {
+      try {
+        const { error } = await supabaseClient.from('applications').update({ status: 'approved' }).eq('id', appId);
+        if (error) throw new Error(error.message);
+        await loadApps();
+        showToast('Đã duyệt game!', 'success');
         renderAdminPendingList();
         renderAppList();
-      }
+      } catch (err) { showToast('Lỗi: ' + err.message, 'error'); }
     }
 
+    async function rejectApp(appId) {
+      if (!confirm('Bạn có chắc muốn XÓA / TỪ CHỐI game này?')) return;
+      try {
+        const { error } = await supabaseClient.from('applications').delete().eq('id', appId);
+        if (error) throw new Error(error.message);
+        await loadApps();
+        showToast('Đã từ chối game.', 'info');
+        renderAdminPendingList();
+      } catch (err) { showToast('Lỗi: ' + err.message, 'error'); }
+    }
+
+    // ============================================================
+    // USER MANAGEMENT
+    // ============================================================
     function renderAdminUserTable() {
       const tbody = document.getElementById('userManagementTable');
-      tbody.innerHTML = allUsersCache.map(u => `
+      const canEdit = currentUser && currentUser.role === 3;
+
+      tbody.innerHTML = localUsers.map(u => `
         <tr class="hover:bg-slate-800/40 transition">
-          <td class="p-3 font-bold text-slate-200 flex items-center gap-1.5 cursor-pointer" onclick="openProfileModal('${u.id}')">
-            ${u.username} ${getRoleBadgeHtml(u.role_level)}
+          <td class="p-3 font-bold text-slate-200">
+            <div class="flex items-center gap-2">
+              <img src="${escapeHtml(u.avatar)}" class="w-8 h-8 rounded-full object-cover border border-slate-700" onerror="this.src='https://i.imgur.com/default-avatar.png'">
+              <span class="cursor-pointer hover:text-cyan-400" onclick="openProfile('${u.id}')">${escapeHtml(u.username)}</span>
+              ${getRoleBadgeHtml(u.role)}
+            </div>
           </td>
-          <td class="p-3 text-slate-400 text-xs font-mono">${u.email}</td>
           <td class="p-3">
             <span class="px-2 py-1 rounded text-xs font-mono ${
-              u.role_level === 3 ? 'bg-purple-950 text-purple-400 border border-purple-800' :
-              u.role_level === 2 ? 'bg-yellow-950 text-yellow-400 border border-yellow-800' :
-              u.role_level === 1 ? 'bg-cyan-950 text-cyan-400 border border-cyan-800' : 'bg-slate-800 text-slate-400'
-            }">Level ${u.role_level}</span>
+              u.role === 3 ? 'bg-purple-950 text-purple-400 border border-purple-800' :
+              u.role === 2 ? 'bg-yellow-950 text-yellow-400 border border-yellow-800' :
+              u.role === 1 ? 'bg-cyan-950 text-cyan-400 border border-cyan-800' :
+              'bg-slate-800 text-slate-400'
+            }">Level ${u.role}</span>
           </td>
-          <td class="p-3">${u.is_banned ? '<span class="text-rose-400 text-xs font-bold">BANNED</span>' : '<span class="text-emerald-400 text-xs font-bold">Hoạt động</span>'}</td>
+          <td class="p-3">
+            ${u.banned
+              ? `<span class="text-rose-400 text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-ban"></i> ĐÃ BỊ BAN</span>`
+              : `<span class="text-emerald-400 text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-circle text-[8px]"></i> Hoạt động</span>`}
+          </td>
           <td class="p-3 text-right space-x-1">
-            ${currentUserProfile.role_level === 3 ? `
-              <select onchange="changeUserRole('${u.id}', this.value)" class="bg-[#131b2e] border border-slate-700 text-xs text-slate-200 rounded px-2 py-1">
-                <option value="0" ${u.role_level === 0 ? 'selected' : ''}>Level 0</option>
-                <option value="1" ${u.role_level === 1 ? 'selected' : ''}>Level 1</option>
-                <option value="2" ${u.role_level === 2 ? 'selected' : ''}>Level 2</option>
-                <option value="3" ${u.role_level === 3 ? 'selected' : ''}>Level 3</option>
-              </select>
-            ` : ''}
-            <button onclick="toggleBan('${u.id}', ${!u.is_banned})" class="px-2.5 py-1 rounded text-xs font-bold ${u.is_banned ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
-              ${u.is_banned ? 'Unban' : 'BAN'}
-            </button>
+            ${canEdit && String(u.id) !== String(currentUser.id) ? `
+              <select onchange="changeUserRole('${u.id}', this.value)" class="bg-[#131b2e] border border-slate-700 text-xs text-slate-200 rounded px-2 py-1 focus:outline-none">
+                <option value="0" ${u.role === 0 ? 'selected' : ''}>Level 0</option>
+                <option value="1" ${u.role === 1 ? 'selected' : ''}>Level 1</option>
+                <option value="2" ${u.role === 2 ? 'selected' : ''}>Level 2</option>
+                <option value="3" ${u.role === 3 ? 'selected' : ''}>Level 3</option>
+              </select>` : ''}
+            <button onclick="toggleBanUser('${u.id}')" class="px-2.5 py-1 rounded text-xs font-bold ${
+              u.banned ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+            }">${u.banned ? 'Unban' : 'BAN'}</button>
           </td>
-        </tr>
-      `).join('');
+        </tr>`).join('');
     }
 
     async function changeUserRole(userId, newRole) {
-      if (currentUserProfile.role_level !== 3) return alert("Chỉ Admin Level 3 mới có quyền!");
-      await supabase.from('users').update({ role_level: parseInt(newRole) }).eq('id', userId);
-      await loadAllUsers();
-      renderAdminUserTable();
+      if (!currentUser || currentUser.role !== 3) { showToast('Chỉ Admin Level 3 mới có quyền này!', 'error'); return; }
+      try {
+        const roleInt = parseInt(newRole);
+        const { error } = await supabaseClient.from('users').update({ role_level: roleInt }).eq('id', userId);
+        if (error) throw new Error(error.message);
+        const idx = localUsers.findIndex(u => String(u.id) === String(userId));
+        if (idx >= 0) localUsers[idx].role = roleInt;
+        showToast('Đã cập nhật quyền hạn.', 'success');
+        renderAdminUserTable();
+        renderNavButtons();
+      } catch (err) { showToast('Lỗi: ' + err.message, 'error'); }
     }
 
-    async function toggleBan(userId, isBanned) {
-      await supabase.from('users').update({ is_banned: isBanned }).eq('id', userId);
-      await loadAllUsers();
-      renderAdminUserTable();
+    async function toggleBanUser(userId) {
+      const u = localUsers.find(x => String(x.id) === String(userId));
+      if (!u) return;
+      if (u.role === 3) { showToast('Không thể BAN Admin tối cao!', 'error'); return; }
+      try {
+        const newBan = !u.banned;
+        const { error } = await supabaseClient.from('users').update({ is_banned: newBan }).eq('id', userId);
+        if (error) throw new Error(error.message);
+        const idx = localUsers.findIndex(x => String(x.id) === String(userId));
+        if (idx >= 0) localUsers[idx].banned = newBan;
+        showToast(`Đã ${newBan ? 'BAN' : 'UNBAN'} ${u.username}`, 'info');
+        renderAdminUserTable();
+      } catch (err) { showToast('Lỗi: ' + err.message, 'error'); }
     }
 
-    // UTILS
-    function setFilter(filterType) {
-      currentFilter = filterType;
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('bg-cyan-500', 'text-black');
-        btn.classList.add('text-slate-400');
-      });
-      const activeBtn = document.getElementById(`filter-${filterType}`);
-      activeBtn.classList.add('bg-cyan-500', 'text-black');
-      activeBtn.classList.remove('text-slate-400');
-      renderAppList();
-    }
-
+    // ============================================================
+    // MODAL + TOAST
+    // ============================================================
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function showToast(msg, type = 'info') {
+      const colors = {
+        success: 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300',
+        error: 'bg-rose-500/20 border-rose-500/40 text-rose-300',
+        info: 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300',
+      };
+      const t = document.createElement('div');
+      t.className = `fixed bottom-6 right-6 z-[60] px-4 py-3 rounded-xl glass-panel border ${colors[type]} text-sm font-bold fade-in max-w-sm`;
+      t.innerHTML = msg;
+      document.body.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; }, 2400);
+      setTimeout(() => t.remove(), 2800);
+    }
 
-    // Run Init
-    setFilter('latest');
-    init();
+    // ============================================================
+    // REFRESH + INIT
+    // ============================================================
+    async function refreshAllUI() {
+      renderNavButtons();
+      renderAppList();
+      renderAdminPendingList();
+      renderAdminUserTable();
+      updateAdminRoleBadge();
+      if (currentUser && currentUser.role < 2 && !document.getElementById('adminView').classList.contains('hidden')) {
+        switchView('user');
+      }
+    }
+
+    async function init() {
+      try {
+        await loadUsers();
+        await loadApps();
+
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session?.user) {
+          const profile = await waitForProfile(session.user.id);
+          if (profile && !profile.banned) currentUser = profile;
+        }
+
+        setFilter('latest');
+        await refreshAllUI();
+        showToast('Đã kết nối Supabase ⚡', 'success');
+      } catch (e) {
+        console.error('Init error:', e);
+        showToast('Lỗi kết nối Supabase: ' + e.message, 'error');
+        setFilter('latest');
+        await refreshAllUI();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const editAv = document.getElementById('editAvatar');
+      if (editAv) editAv.addEventListener('input', e => {
+        document.getElementById('editAvatarPreview').src = e.target.value.trim() || 'https://i.imgur.com/default-avatar.png';
+      });
+      init();
+    });
   </script>
 </body>
-</html>
+  </html>
