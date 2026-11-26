@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Neon AI Studio — Tạo AI của riêng bạn</title>
+<style>
+:root{
+  --bg:#05060b; --bg2:#0a0c15;
+  --glass:rgba(255,255,255,.045); --glass2:rgba(255,255,255,.075);
+  --line:rgba(255,255,255,.10); --line2:rgba(255,255,255,.18);
+  --txt:#e9edf6; --muted:#8b94a9; --dim:#5f677a;
+  --neon:#8b5cff; --neon2:#22d3ee; --pink:#f472b6;
+  --ok:#34d399; --warn:#fbbf24; --bad:#fb7185;
+  --r:16px; --shadow:0 18px 60px rgba(0,0,0,.55);
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--txt);font-family:var(--font);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden;
+}
+::selection{background:rgba(139,92,255,.35)}
+/* ---------- background ---------- */
+.bg-orbs{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+.bg-orbs span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+.bg-orbs span:nth-child(1){width:560px;height:560px;left:-160px;top:-160px;background:radial-gradient(circle,#6d3bff,transparent 68%);animation:float1 22s ease-in-out infinite}
+.bg-orbs span:nth-child(2){width:520px;height:520px;right:-140px;top:10%;background:radial-gradient(circle,#0ea5b7,transparent 68%);animation:float2 26s ease-in-out infinite}
+.bg-orbs span:nth-child(3){width:620px;height:620px;left:35%;bottom:-320px;background:radial-gradient(circle,#c026d3,transparent 70%);animation:float3 30s ease-in-out infinite;opacity:.32}
+@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(70px,60px)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-80px,50px)}}
+@keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,-70px)}}
+/* ---------- generic ---------- */
+.view{display:none;position:relative;z-index:1;height:100%}
+.view.on{display:flex}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 15px;border-radius:12px;border:1px solid var(--line);
+  background:var(--glass);color:var(--txt);font:inherit;font-size:14px;font-weight:500;
+  cursor:pointer;transition:transform .16s ease,background .16s,border-color .16s,box-shadow .16s;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);white-space:nowrap;
+}
+.btn:hover{background:var(--glass2);border-color:var(--line2);transform:translateY(-1px)}
+.btn:active{transform:translateY(0) scale(.99)}
+.btn.primary{
+  background:linear-gradient(135deg,rgba(139,92,255,.95),rgba(34,211,238,.8));
+  border-color:rgba(255,255,255,.22);font-weight:650;color:#fff;
+  box-shadow:0 10px 32px rgba(139,92,255,.35),inset 0 1px 0 rgba(255,255,255,.35);
+}
+.btn.primary:hover{box-shadow:0 14px 44px rgba(139,92,255,.55),inset 0 1px 0 rgba(255,255,255,.4)}
+.btn.ghost{background:transparent}
+.btn.ghost:hover{background:var(--glass)}
+.btn.small{padding:7px 11px;font-size:13px;border-radius:10px}
+.btn.danger{color:#ffb9c2;border-color:rgba(251,113,133,.32);background:rgba(251,113,133,.07)}
+.btn.wide{width:100%}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.icon-btn{
+  width:34px;height:34px;display:grid;place-items:center;border-radius:10px;
+  border:1px solid transparent;background:transparent;color:var(--muted);
+  cursor:pointer;font-size:15px;transition:.15s;font-family:inherit
+}
+.icon-btn:hover{background:var(--glass);color:var(--txt);border-color:var(--line)}
+/* ---------- landing ---------- */
+#landing{flex-direction:column;align-items:center;justify-content:flex-start;overflow:auto;padding:56px 20px 40px}
+.hero{max-width:860px;width:100%;text-align:center;margin:auto;display:flex;flex-direction:column;align-items:center}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+  border:1px solid rgba(139,92,255,.35);background:rgba(139,92,255,.10);
+  font-size:12.5px;letter-spacing:.4px;color:#c9b8ff;margin-bottom:26px;
+  box-shadow:0 0 26px rgba(139,92,255,.22) inset;
+}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.logo{
+  font-size:clamp(38px,7vw,68px);line-height:1.04;margin:0 0 18px;font-weight:800;letter-spacing:-2px;
+  background:linear-gradient(100deg,#fff 8%,#c7b3ff 38%,#7ce7ff 66%,#fff 96%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 8px 40px rgba(139,92,255,.35));
+}
+.sub{color:var(--muted);font-size:15.5px;max-width:620px;margin:0 0 34px}
+.cta{
+  position:relative;display:inline-flex;align-items:center;gap:12px;
+  padding:19px 40px;border-radius:22px;border:1px solid rgba(255,255,255,.28);
+  background:linear-gradient(135deg,#8b5cff,#5b7cfa 45%,#22d3ee);
+  color:#fff;font-family:inherit;font-size:17.5px;font-weight:700;letter-spacing:.2px;
+  cursor:pointer;overflow:hidden;
+  box-shadow:0 20px 60px rgba(116,86,255,.5),inset 0 1px 0 rgba(255,255,255,.45);
+  transition:transform .2s cubic-bezier(.2,.9,.2,1),box-shadow .25s;
+  animation:breathe 4.5s ease-in-out infinite;
+}
+.cta::after{
+  content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.5) 50%,transparent 75%);
+  transform:translateX(-120%);animation:sheen 5s ease-in-out infinite;
+}
+.cta:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 26px 80px rgba(116,86,255,.7),inset 0 1px 0 rgba(255,255,255,.5)}
+.cta:active{transform:translateY(-1px) scale(1)}
+.cta .plus{font-size:19px}
+@keyframes breathe{0%,100%{box-shadow:0 20px 60px rgba(116,86,255,.45),inset 0 1px 0 rgba(255,255,255,.45)}50%{box-shadow:0 24px 76px rgba(116,86,255,.72),inset 0 1px 0 rgba(255,255,255,.45)}}
+@keyframes sheen{0%{transform:translateX(-120%)}55%{transform:translateX(120%)}100%{transform:translateX(120%)}}
+.tiny{color:var(--dim);font-size:12.5px;margin:22px 0 0;max-width:460px}
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;width:100%;margin-top:44px}
+.agent-card{
+  text-align:left;padding:15px;border-radius:14px;border:1px solid var(--line);
+  background:var(--glass);cursor:pointer;transition:.18s;position:relative;overflow:hidden;
+  backdrop-filter:blur(14px);display:flex;gap:12px;align-items:flex-start;
+}
+.agent-card:hover{border-color:rgba(139,92,255,.5);background:var(--glass2);transform:translateY(-2px);box-shadow:0 12px 34px rgba(0,0,0,.4)}
+.agent-card .avatar{width:38px;height:38px;font-size:18px;flex:0 0 auto}
+.agent-card .ac-name{font-weight:650;font-size:14.5px;margin-bottom:2px}
+.agent-card .ac-meta{font-size:11.5px;color:var(--muted);font-family:var(--mono);word-break:break-all;line-height:1.4}
+.agent-card .ac-del{position:absolute;right:6px;top:6px;opacity:0;transition:.15s;font-size:12px}
+.agent-card:hover .ac-del{opacity:1}
+.avatar{
+  width:32px;height:32px;border-radius:11px;display:grid;place-items:center;flex:0 0 auto;
+  background:linear-gradient(135deg,rgba(139,92,255,.35),rgba(34,211,238,.25));
+  border:1px solid rgba(255,255,255,.18);font-size:15px;
+  box-shadow:0 4px 18px rgba(139,92,255,.3),inset 0 1px 0 rgba(255,255,255,.2)
+}
+/* ---------- chat layout ---------- */
+#chatView{overflow:hidden}
+.sidebar{
+  width:264px;flex:0 0 264px;height:100%;display:flex;flex-direction:column;
+  border-right:1px solid var(--line);background:rgba(9,10,17,.72);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);padding:12px 12px 10px;gap:10px;
+  transition:margin-left .25s ease;
+}
+.side-head{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 4px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:750;letter-spacing:.4px;font-size:14.5px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,#8b5cff,#22d3ee);box-shadow:0 0 12px rgba(139,92,255,.9)}
+.side-label{font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--dim);padding:6px 6px 0}
+.agent-tabs{display:flex;flex-direction:column;gap:5px;max-height:26vh;overflow:auto}
+.agent-tab{
+  display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:10px;border:1px solid transparent;
+  background:transparent;color:var(--txt);font:inherit;font-size:13.5px;cursor:pointer;text-align:left;transition:.15s
+}
+.agent-tab:hover{background:var(--glass)}
+.agent-tab.on{background:linear-gradient(90deg,rgba(139,92,255,.22),rgba(34,211,238,.10));border-color:rgba(139,92,255,.4)}
+.agent-tab .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.chat-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:3px;padding-bottom:6px}
+.chat-item{
+  display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:10px;cursor:pointer;
+  font-size:13px;color:var(--muted);transition:.15s;border:1px solid transparent;
+}
+.chat-item:hover{background:var(--glass);color:var(--txt)}
+.chat-item.on{background:var(--glass2);color:var(--txt);border-color:var(--line)}
+.chat-item .ttl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-item .del{opacity:0;font-size:12px;padding:2px 4px;border-radius:6px}
+.chat-item:hover .del{opacity:.7}
+.chat-item .del:hover{background:rgba(251,113,133,.2);opacity:1}
+.side-foot{display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.stor{width:100%;font-size:10.5px;color:var(--dim);font-family:var(--mono);margin-top:4px;letter-spacing:.2px}
+.chat-main{flex:1;display:flex;flex-direction:column;min-width:0;height:100%}
+.topbar{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);
+  background:rgba(8,9,15,.6);backdrop-filter:blur(18px);flex:0 0 auto;
+}
+.who{display:flex;align-items:center;gap:9px;min-width:0}
+.who-name{font-weight:650;font-size:14px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who-meta{font-size:11px;color:var(--dim);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:42vw}
+.spacer{flex:1}
+.messages{flex:1;overflow-y:auto;overflow-x:hidden;padding:22px 16px 8px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth}
+.msg{display:flex;gap:11px;max-width:min(880px,100%);width:100%;margin:0 auto;animation:rise .28s cubic-bezier(.2,.9,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg.user{flex-direction:row-reverse}
+.bubble{
+  min-width:0;max-width:100%;padding:13px 16px;border-radius:16px;border:1px solid var(--line);
+  background:var(--glass);backdrop-filter:blur(14px);font-size:14.6px;line-height:1.68;
+  box-shadow:0 8px 30px rgba(0,0,0,.28);overflow-wrap:anywhere;
+}
+.msg.user .bubble{
+  background:linear-gradient(135deg,rgba(139,92,255,.20),rgba(34,211,238,.10));
+  border-color:rgba(139,92,255,.35);max-width:min(660px,86%);white-space:pre-wrap
+}
+.msg .avatar{margin-top:2px}
+.msg-tools{display:flex;gap:6px;margin-top:8px;opacity:0;transition:.18s}
+.msg:hover .msg-tools{opacity:1}
+.mini{
+  font:inherit;font-size:11.5px;padding:3px 8px;border-radius:8px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer;transition:.15s
+}
+.mini:hover{background:var(--glass2);color:var(--txt)}
+.typing{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--neon2);animation:bounce 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.cursor{display:inline-block;width:7px;height:16px;background:var(--neon2);vertical-align:-2px;margin-left:2px;animation:blink .9s steps(2) infinite;border-radius:1px}
+@keyframes blink{50%{opacity:0}}
+/* ---------- markdown ---------- */
+.md>*:first-child{margin-top:0}
+.md>*:last-child{margin-bottom:0}
+.md p{margin:.55em 0}
+.md h1,.md h2,.md h3,.md h4{margin:1.1em 0 .45em;line-height:1.3;font-weight:700;letter-spacing:-.2px}
+.md h1{font-size:1.42em}.md h2{font-size:1.24em}.md h3{font-size:1.1em}.md h4{font-size:1em;color:var(--muted)}
+.md h2{border-bottom:1px solid var(--line);padding-bottom:.25em}
+.md strong{color:#fff;font-weight:680}
+.md em{color:#cfd6e6}
+.md a{color:#7ce7ff;text-decoration:none;border-bottom:1px solid rgba(124,231,255,.3)}
+.md a:hover{border-bottom-color:#7ce7ff}
+.md ul,.md ol{margin:.5em 0;padding-left:1.35em}
+.md li{margin:.22em 0}
+.md li::marker{color:var(--neon)}
+.md blockquote{margin:.7em 0;padding:.55em .9em;border-left:3px solid rgba(139,92,255,.7);background:rgba(139,92,255,.08);border-radius:0 10px 10px 0;color:#c8cfe0}
+.md hr{border:0;border-top:1px solid var(--line);margin:1.1em 0}
+.md code{font-family:var(--mono);font-size:.88em;background:rgba(255,255,255,.08);padding:.14em .4em;border-radius:6px;color:#a8e9ff}
+.tablewrap{overflow-x:auto;margin:.75em 0;-webkit-overflow-scrolling:touch}
+.md table{border-collapse:separate;border-spacing:0;font-size:13.4px;width:100%;border-radius:10px;border:1px solid var(--line)}
+.md div>p:first-child{margin-top:0}
+.md div>p:last-child{margin-bottom:0}
+.md .tablewrap:last-child{margin-bottom:0}
+.streamtxt{white-space:pre-wrap;word-break:break-word}
+.md th,.md td{padding:8px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.md th{background:rgba(255,255,255,.06);font-weight:650;color:#fff;white-space:nowrap}
+.md tr:last-child td{border-bottom:0}
+.md tbody tr:hover td{background:rgba(255,255,255,.03)}
+.codecard{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:.75em 0;background:rgba(2,3,8,.75)}
+.codecard .cc-head{display:flex;align-items:center;justify-content:space-between;padding:7px 11px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(255,255,255,.035)}
+.codecard pre{margin:0;padding:12px 14px;overflow:auto;font-family:var(--mono);font-size:12.8px;line-height:1.6;color:#d6e2f5}
+/* ---------- artifact ---------- */
+.artifact{border:1px solid rgba(139,92,255,.32);border-radius:15px;overflow:hidden;margin:.85em 0;background:rgba(12,14,24,.72);box-shadow:0 12px 40px rgba(0,0,0,.4),0 0 0 1px rgba(34,211,238,.06) inset}
+.art-head{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.07);background:linear-gradient(90deg,rgba(139,92,255,.16),rgba(34,211,238,.06))}
+.art-label{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;letter-spacing:.2px;min-width:0}
+.art-ico{font-size:13px}
+.pill{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);font-weight:500;white-space:nowrap}
+.pill.auto{color:#9cf7d8;border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.12)}
+.art-tools{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.art-art{font-size:11.5px;padding:3px 8px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#cdd6e6;cursor:pointer;font-family:inherit;transition:.15s}
+.art-art:hover{background:rgba(255,255,255,.12);color:#fff}
+.art-body{position:relative}
+.art-frame{width:100%;border:0;display:block;background:#080a12;min-height:160px}
+.art-run{display:flex;flex-direction:column;align-items:center;gap:9px;padding:26px 18px;text-align:center;background:
+  radial-gradient(circle at 50% 0%,rgba(139,92,255,.16),transparent 70%)}
+.art-run .rt{font-size:13px;color:var(--muted)}
+.art-run .btn{padding:9px 18px}
+.art-code{display:none}
+.art-code.on{display:block}
+.art-code pre{margin:0;padding:12px 14px;max-height:340px;overflow:auto;font-family:var(--mono);font-size:12.5px;line-height:1.55;color:#d6e2f5;background:rgba(2,3,8,.6)}
+/* chart & quiz */
+.chart-wrap{padding:14px 12px 10px}
+.chart-title{font-size:13.5px;font-weight:650;margin-bottom:6px;color:#eef2fb}
+.chart-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:11.5px;color:var(--muted)}
+.chart-legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+.quiz{padding:14px}
+.quiz-q{margin-bottom:14px;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:12px}
+.quiz-q:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+.quiz-t{font-size:13.8px;font-weight:600;margin-bottom:9px}
+.quiz-o{
+  display:flex;gap:9px;align-items:flex-start;padding:8px 11px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(255,255,255,.03);margin-bottom:6px;cursor:pointer;font-size:13.3px;transition:.15s;user-select:none
+}
+.quiz-o:hover{background:rgba(255,255,255,.08);border-color:var(--line2)}
+.quiz-o .k{font-family:var(--mono);font-size:11.5px;color:var(--neon2);flex:0 0 auto;padding-top:1px}
+.quiz-o.ok{border-color:rgba(52,211,153,.6);background:rgba(52,211,153,.14);color:#c8ffe9}
+.quiz-o.no{border-color:rgba(251,113,133,.6);background:rgba(251,113,133,.12);color:#ffd4da}
+.quiz-o.ok .k,.quiz-o.no .k{color:inherit}
+.quiz-ex{font-size:12.3px;color:#a9d8c9;margin-top:6px;display:none;padding-left:2px}
+.quiz-ex.on{display:block}
+/* ---------- composer ---------- */
+.composer-wrap{padding:8px 16px 14px;flex:0 0 auto;background:linear-gradient(to top,rgba(5,6,11,.95),transparent)}
+.composer{
+  max-width:min(880px,100%);margin:0 auto;display:flex;align-items:flex-end;gap:8px;
+  padding:8px 8px 8px 14px;border-radius:18px;border:1px solid var(--line);
+  background:rgba(16,18,28,.85);backdrop-filter:blur(20px);transition:.2s;
+  box-shadow:0 12px 40px rgba(0,0,0,.45)
+}
+.composer:focus-within{border-color:rgba(139,92,255,.55);box-shadow:0 12px 44px rgba(139,92,255,.22),0 0 0 3px rgba(139,92,255,.10)}
+.composer textarea{
+  flex:1;background:transparent;border:0;color:var(--txt);font:inherit;font-size:14.6px;
+  resize:none;outline:none;padding:9px 0;max-height:190px;line-height:1.55;min-height:22px
+}
+.composer textarea::placeholder{color:#5d6478}
+.send{
+  width:38px;height:38px;flex:0 0 auto;border-radius:12px;border:1px solid rgba(255,255,255,.2);
+  background:linear-gradient(135deg,#8b5cff,#22d3ee);color:#fff;font-size:16px;cursor:pointer;
+  display:grid;place-items:center;transition:.18s;box-shadow:0 6px 20px rgba(139,92,255,.4)
+}
+.send:hover{transform:translateY(-1px) scale(1.04);box-shadow:0 10px 28px rgba(139,92,255,.6)}
+.send.stop{background:linear-gradient(135deg,#fb7185,#f59e0b);box-shadow:0 6px 20px rgba(251,113,133,.4)}
+.composer-hint{max-width:min(880px,100%);margin:7px auto 0;display:flex;justify-content:space-between;font-size:11px;color:var(--dim);font-family:var(--mono);padding:0 6px;gap:10px}
+/* ---------- empty state ---------- */
+.empty{max-width:640px;margin:auto;text-align:center;padding:34px 10px;color:var(--muted)}
+.empty .big{font-size:40px;margin-bottom:12px;filter:drop-shadow(0 6px 24px rgba(139,92,255,.6))}
+.empty h3{color:var(--txt);font-size:18px;margin:0 0 8px;font-weight:700}
+.empty p{margin:0 0 20px;font-size:13.6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{
+  padding:9px 14px;border-radius:12px;border:1px solid var(--line);background:var(--glass);
+  color:#c9d1e2;font:inherit;font-size:13px;cursor:pointer;transition:.16s;text-align:left
+}
+.chip:hover{background:var(--glass2);border-color:rgba(139,92,255,.5);color:#fff;transform:translateY(-1px)}
+/* ---------- overlay / form ---------- */
+.overlay{
+  position:fixed;inset:0;z-index:60;display:none;place-items:center;padding:18px;
+  background:rgba(3,4,8,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+}
+.overlay.on{display:grid;animation:fadein .2s ease}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.sheet{
+  width:min(640px,100%);max-height:91vh;display:flex;flex-direction:column;
+  border-radius:22px;border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(20,22,34,.98),rgba(11,12,20,.99));
+  box-shadow:0 40px 120px rgba(0,0,0,.75),0 0 0 1px rgba(139,92,255,.14) inset;
+  animation:pop .26s cubic-bezier(.2,.9,.2,1);overflow:hidden
+}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.sheet-head{padding:20px 22px 12px}
+.sheet-head h2{margin:0 0 6px;font-size:19px;letter-spacing:-.3px}
+.sheet-head p{margin:0;font-size:12.8px;color:var(--muted);line-height:1.55}
+.sheet-body{padding:6px 22px 18px;overflow-y:auto;display:flex;flex-direction:column;gap:15px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field>span{font-size:12.4px;font-weight:600;color:#b9c2d6;letter-spacing:.2px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.field>span a{color:#7ce7ff;font-size:11.5px;font-weight:500;text-decoration:none;border-bottom:1px dashed rgba(124,231,255,.4)}
+input[type=text],input[type=password],input[type=number],select,textarea{
+  width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.04);color:var(--txt);font:inherit;font-size:14px;outline:none;transition:.16s
+}
+textarea{resize:vertical;line-height:1.6;font-size:13.6px}
+input:focus,select:focus,textarea:focus{border-color:rgba(139,92,255,.65);background:rgba(139,92,255,.06);box-shadow:0 0 0 3px rgba(139,92,255,.12)}
+input::placeholder,textarea::placeholder{color:#565d70}
+.row{display:flex;gap:8px;align-items:center}
+.row>input{flex:1;min-width:0}
+.seg{display:flex;gap:6px;padding:4px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.seg button{
+  flex:1;padding:9px 8px;border-radius:10px;border:1px solid transparent;background:transparent;
+  color:var(--muted);font:inherit;font-size:13.4px;font-weight:600;cursor:pointer;transition:.16s
+}
+.seg button:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.seg button.on{color:#fff;background:linear-gradient(135deg,rgba(139,92,255,.85),rgba(34,211,238,.55));border-color:rgba(255,255,255,.2);box-shadow:0 4px 16px rgba(139,92,255,.4)}
+.check-msg{font-size:12px;min-height:17px;display:flex;align-items:center;gap:6px}
+.check-msg.ok{color:#7ee9c0}.check-msg.bad{color:#ffa8b4}.check-msg.work{color:var(--muted)}
+.slider-row{display:grid;grid-template-columns:1fr 66px;gap:10px;align-items:center}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:99px;outline:none;
+  background:linear-gradient(90deg,rgba(139,92,255,.9),rgba(34,211,238,.75));cursor:pointer
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:#fff;
+  border:2px solid #8b5cff;box-shadow:0 0 12px rgba(139,92,255,.8);cursor:pointer
+}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#fff;border:2px solid #8b5cff;box-shadow:0 0 12px rgba(139,92,255,.8)}
+.numv{font-family:var(--mono);font-size:12.5px;color:#a8b2c9;text-align:right}
+.adv{border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.025);overflow:hidden}
+.adv summary{padding:10px 13px;font-size:13px;font-weight:600;color:#b9c2d6;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.adv summary::-webkit-details-marker{display:none}
+.adv summary::after{content:"▾";color:var(--dim);transition:.2s}
+.adv[open] summary::after{transform:rotate(180deg)}
+.adv .adv-body{padding:2px 13px 14px;display:flex;flex-direction:column;gap:12px}
+.sheet-foot{display:flex;gap:9px;justify-content:flex-end;padding:14px 22px;border-top:1px solid var(--line);background:rgba(255,255,255,.02)}
+.switch{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#b9c2d6;font-weight:600}
+.switch input{appearance:none;-webkit-appearance:none;width:42px;height:23px;border-radius:99px;background:rgba(255,255,255,.12);position:relative;cursor:pointer;transition:.2s;border:1px solid var(--line)}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:.2s}
+.switch input:checked{background:linear-gradient(135deg,#8b5cff,#22d3ee);border-color:transparent}
+.switch input:checked::after{transform:translateX(19px)}
+/* fullscreen artifact */
+.fs-overlay{position:fixed;inset:0;z-index:90;display:none;flex-direction:column;background:rgba(4,5,10,.95);padding:12px}
+.fs-overlay.on{display:flex}
+.fs-bar{display:flex;align-items:center;gap:10px;padding:6px 6px 12px;font-size:13px;color:var(--muted)}
+.fs-overlay iframe{flex:1;width:100%;border:1px solid var(--line);border-radius:14px;background:#080a12}
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);z-index:120;
+  padding:11px 18px;border-radius:13px;border:1px solid rgba(255,255,255,.16);
+  background:rgba(22,24,36,.96);color:#eef2fb;font-size:13.2px;backdrop-filter:blur(16px);
+  box-shadow:0 16px 50px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:.24s cubic-bezier(.2,.9,.2,1)
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+/* scrollbars */
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.13);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.24);background-clip:padding-box}
+/* responsive */
+@media(max-width:860px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:70;margin-left:-280px;box-shadow:0 0 80px rgba(0,0,0,.7)}
+  .sidebar.open{margin-left:0}
+  .messages{padding:16px 12px 6px}
+  .msg.user .bubble{max-width:92%}
+  .composer-wrap{padding:6px 10px 10px}
+  .who-meta{max-width:34vw}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<!-- ============ LANDING ============ -->
+<main id="landing" class="view on">
+  <div class="hero">
+    <div class="badge">BYOK · Groq &amp; OpenRouter</div>
+    <h1 class="logo">Neon AI Studio</h1>
+    <p class="sub">
+      Tự tạo AI của riêng bạn — bằng API key của chính bạn, system prompt của riêng bạn,
+      và một khung chat biết tự vẽ UI, biểu đồ, artifact HTML tương tác ngay trong cuộc trò chuyện.
+    </p>
+    <button id="btnCreate" class="cta"><span class="plus">✦</span> Tạo AI của riêng bạn</button>
+    <p class="tiny">API key chỉ lưu trên máy bạn (IndexedDB + OPFS), không gửi đi đâu ngoài nhà cung cấp bạn chọn.</p>
+    <div id="agentList" class="agent-grid"></div>
+  </div>
+</main>
+
+<!-- ============ CHAT ============ -->
+<main id="chatView" class="view">
+  <aside id="sidebar" class="sidebar">
+    <div class="side-head">
+      <div class="brand"><span class="dot"></span> Neon Studio</div>
+      <button class="icon-btn" id="btnCloseSide" title="Đóng">✕</button>
+    </div>
+    <button class="btn primary wide" id="btnNewChat">＋ Chat mới</button>
+    <div class="side-label">AI của bạn</div>
+    <div id="agentTabs" class="agent-tabs"></div>
+    <div class="side-label">Lịch sử chat</div>
+    <div id="chatList" class="chat-list"></div>
+    <div class="side-foot">
+      <button class="btn ghost small" id="btnSettings">⚙ Cấu hình</button>
+      <button class="btn ghost small" id="btnHome">⌂ Trang chủ</button>
+      <div class="stor" id="storStatus">storage: …</div>
+    </div>
+  </aside>
+
+  <section class="chat-main">
+    <header class="topbar">
+      <button class="icon-btn" id="btnOpenSide" title="Menu">☰</button>
+      <div class="who">
+        <span id="agentAvatar" class="avatar">✦</span>
+        <div style="min-width:0">
+          <div id="agentName" class="who-name">AI</div>
+          <div id="agentMeta" class="who-meta">—</div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" id="btnClear">Xoá hội thoại</button>
+    </header>
+
+    <div id="messages" class="messages"></div>
+
+    <div class="composer-wrap">
+      <div class="composer">
+        <textarea id="input" rows="1" placeholder="Nhắn cho AI của bạn…  (Enter gửi · Shift+Enter xuống dòng)"></textarea>
+        <button id="btnSend" class="send" title="Gửi">➤</button>
+      </div>
+      <div class="composer-hint">
+        <span id="hintModel">—</span>
+        <span>~~~ tự chạy · --- chờ chạy · MD/bảng/code tự động</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ SETUP SHEET ============ -->
+<div id="overlay" class="overlay">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+    <div class="sheet-head">
+      <h2 id="setupTitle">Tạo AI của riêng bạn</h2>
+      <p id="setupSub">Điền API key, chọn model, viết system prompt. Studio sẽ kiểm tra key trước khi cho bạn vào chat.</p>
+    </div>
+    <div class="sheet-body">
+      <div class="field">
+        <span>Nhà cung cấp</span>
+        <div class="seg" id="segProvider">
+          <button type="button" data-p="groq" class="on">Groq</button>
+          <button type="button" data-p="openrouter">OpenRouter</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <span>Tên AI</span>
+        <div class="row">
+          <input id="fEmoji" type="text" value="✦" maxlength="4" style="width:64px;text-align:center;flex:0 0 64px" title="Emoji">
+          <input id="fName" type="text" placeholder="Ví dụ: Trợ lý Hải" maxlength="40">
+        </div>
+      </div>
+
+      <div class="field">
+        <span>API key <a id="keyLink" href="https://console.groq.com/keys" target="_blank" rel="noopener">lấy key ↗</a></span>
+        <div class="row">
+          <input id="fKey" type="password" placeholder="gsk_..." autocomplete="off" spellcheck="false">
+          <button type="button" class="btn small" id="btnEye" title="Hiện/ẩn">👁</button>
+          <button type="button" class="btn small" id="btnCheck">Kiểm tra</button>
+        </div>
+        <div id="checkMsg" class="check-msg"></div>
+      </div>
+
+      <div class="field">
+        <span>Model <a id="modelHint" href="#" target="_blank" rel="noopener" style="display:none">xem model ↗</a></span>
+        <input id="fModel" type="text" list="modelList" placeholder="Nhập hoặc chọn model…" spellcheck="false" autocomplete="off">
+        <datalist id="modelList"></datalist>
+      </div>
+
+      <div class="field">
+        <span>System prompt (phần bạn nhìn thấy)</span>
+        <textarea id="fSys" rows="5" placeholder="Bạn là một trợ lý thông minh, trả lời ngắn gọn, chính xác, thân thiện…"></textarea>
+      </div>
+
+      <details class="adv">
+        <summary>Thông số nâng cao</summary>
+        <div class="adv-body">
+          <div class="field">
+            <span>Temperature <span class="numv" id="vTemp">0.70</span></span>
+            <div class="slider-row">
+              <input id="fTemp" type="range" min="0" max="2" step="0.05" value="0.7">
+              <span style="width:0"></span>
+            </div>
+          </div>
+          <div class="field">
+            <span>Top P <span class="numv" id="vTopP">1.00</span></span>
+            <div class="slider-row">
+              <input id="fTopP" type="range" min="0" max="1" step="0.05" value="1">
+              <span style="width:0"></span>
+            </div>
+          </div>
+          <div class="field">
+            <span>Max tokens</span>
+            <input id="fMax" type="number" min="128" max="32768" step="128" value="2048">
+          </div>
+          <div class="field">
+            <span>Ghi nhớ ngữ cảnh (số tin nhắn gửi kèm)</span>
+            <input id="fMemory" type="number" min="2" max="60" step="1" value="24">
+          </div>
+          <label class="switch">Streaming (chữ chạy dần) <input id="fStream" type="checkbox" checked></label>
+        </div>
+      </details>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" id="btnCancel">Huỷ</button>
+      <button class="btn primary" id="btnSaveAgent" disabled>Tạo &amp; vào chat</button>
+    </div>
+  </div>
+</div>
+
+<!-- fullscreen artifact -->
+<div id="fsOverlay" class="fs-overlay">
+  <div class="fs-bar">
+    <strong id="fsTitle" style="color:#e9edf6">Artifact</strong>
+    <span style="flex:1"></span>
+    <button class="btn small ghost" id="fsClose">✕ Đóng</button>
+  </div>
+  <iframe id="fsFrame" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-pointer-lock"></iframe>
+</div>
+
+<div id="toast" class="toast"></div>
